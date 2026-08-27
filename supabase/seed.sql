@@ -12,9 +12,9 @@ insert into category (name, slug) values
   ('Atomizer', 'atomizer');
 
 insert into collection (name, slug, image_url) values
-  ('Floral', 'floral', 'https://placehold.co/800x600/8a5d63/faf3ef.png?text=Floral'),
-  ('Woody & Warm', 'woody-warm', 'https://placehold.co/800x600/5c3a42/faf3ef.png?text=Woody+%26+Warm'),
-  ('Fresh & Fruity', 'fresh-fruity', 'https://placehold.co/800x600/b9915a/faf3ef.png?text=Fresh+%26+Fruity');
+  ('Floral', 'floral', '/images/collections/floral.jpg'),
+  ('Woody & Warm', 'woody-warm', '/images/collections/woody-warm.jpg'),
+  ('Fresh & Fruity', 'fresh-fruity', '/images/collections/fresh-fruity.jpg');
 
 with p as (
   insert into product (category_id, name, slug, scent_notes, usage_instructions, base_price, is_featured)

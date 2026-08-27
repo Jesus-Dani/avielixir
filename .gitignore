@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 supabase/.temp/
+
+# local Claude Code tool permissions, not project config
+.claude/

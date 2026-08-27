@@ -97,8 +97,8 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
         <h2 className="font-display text-xl text-ink">Sizes & Stock</h2>
         <ul className="mt-4 space-y-3">
           {(product.variants ?? []).map((v: { id: string; size_label: string; price: number | null; stock_quantity: number }) => (
-            <li key={v.id} className="flex items-center gap-2">
-              <form action={updateVariant} className="flex flex-1 items-center gap-2">
+            <li key={v.id} className="flex flex-wrap items-center gap-2">
+              <form action={updateVariant} className="flex flex-1 flex-wrap items-center gap-2">
                 <input type="hidden" name="id" value={v.id} />
                 <input type="hidden" name="product_id" value={product.id} />
                 <input name="size_label" defaultValue={v.size_label} className="w-24 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
@@ -114,7 +114,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
             </li>
           ))}
         </ul>
-        <form action={createVariant} className="mt-4 flex items-center gap-2">
+        <form action={createVariant} className="mt-4 flex flex-wrap items-center gap-2">
           <input type="hidden" name="product_id" value={product.id} />
           <input name="size_label" placeholder="e.g. 50ml" required className="w-24 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
           <input name="price" type="number" placeholder="Price (optional)" className="w-32 rounded-md border border-border bg-surface px-2 py-1 text-sm" />

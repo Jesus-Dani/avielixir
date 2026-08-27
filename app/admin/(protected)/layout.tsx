@@ -17,21 +17,26 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
   if (!(await isAdminAuthenticated())) redirect("/admin/login");
 
   return (
-    <div className="mx-auto flex max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:px-8">
-      <aside className="w-48 shrink-0">
-        <p className="font-display text-lg text-ink">Admin</p>
-        <nav className="mt-6 flex flex-col gap-2 text-sm">
+    <div className="mx-auto flex w-full min-w-0 max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 md:flex-row md:gap-8 md:py-10 lg:px-8">
+      <aside className="border-b border-border pb-4 md:w-48 md:shrink-0 md:border-b-0 md:pb-0">
+        <div className="flex items-center justify-between md:block">
+          <p className="font-display text-lg text-ink">Admin</p>
+          <div className="md:hidden">
+            <AdminLogoutButton />
+          </div>
+        </div>
+        <nav className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm md:mt-6 md:flex-col md:gap-2">
           {NAV.map((item) => (
             <Link key={item.href} href={item.href} className="text-ink-soft hover:text-mauve-deep">
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="mt-8">
+        <div className="mt-6 hidden md:block">
           <AdminLogoutButton />
         </div>
       </aside>
-      <div className="flex-1">{children}</div>
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "avi-elixir-privacy-consent";
 
 export function PrivacyGate() {
+  const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [agreed, setAgreed] = useState(false);
 
@@ -33,6 +35,7 @@ export function PrivacyGate() {
       localStorage.setItem(STORAGE_KEY, "agreed");
     } catch {}
     setVisible(false);
+    router.push("/");
   }
 
   if (!visible) return null;
