@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #faf3ef;
+  --color-bg-soft: #f3e6e0;
+  --color-surface: #ffffff;
+  --color-mauve: #8a5d63;
+  --color-mauve-deep: #5c3a42;
+  --color-mauve-deep-2: #47262d;
+  --color-gold: #b9915a;
+  --color-gold-soft: #e3cda0;
+  --color-ink: #1c1512;
+  --color-ink-soft: #5a4c47;
+  --color-border: #e4d3ca;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-bg-soft: var(--color-bg-soft);
+  --color-surface: var(--color-surface);
+  --color-mauve: var(--color-mauve);
+  --color-mauve-deep: var(--color-mauve-deep);
+  --color-mauve-deep-2: var(--color-mauve-deep-2);
+  --color-gold: var(--color-gold);
+  --color-gold-soft: var(--color-gold-soft);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-border: var(--color-border);
+
+  --font-display: var(--font-playfair);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+}
+
+.eyebrow {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
