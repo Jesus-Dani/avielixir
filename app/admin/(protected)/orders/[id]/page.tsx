@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { updateOrderStatus } from "@/lib/admin-actions";
 import { formatNaira } from "@/lib/format";
 
@@ -7,7 +7,7 @@ const STATUSES = ["pending_payment", "paid", "processing", "shipped", "delivered
 
 export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: order } = await supabase
     .from("order")

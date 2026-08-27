@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { toggleFeatured } from "@/lib/admin-actions";
 import { formatNaira } from "@/lib/format";
 
 export default async function AdminProductsPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data: products } = await supabase
     .from("product")
     .select("*, category:category_id(name)")

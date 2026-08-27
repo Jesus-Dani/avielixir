@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createProduct } from "@/lib/admin-actions";
 
 export default async function NewProductPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data: categories } = await supabase.from("category").select("*").order("name");
 
   return (

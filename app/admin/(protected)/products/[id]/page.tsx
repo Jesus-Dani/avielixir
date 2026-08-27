@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   updateProduct,
   deleteProduct,
@@ -14,7 +14,7 @@ import {
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const [{ data: product }, { data: categories }, { data: collections }, { data: productCollections }] = await Promise.all([
     supabase.from("product").select("*, variants:product_variant(*), images:product_image(*)").eq("id", id).single(),

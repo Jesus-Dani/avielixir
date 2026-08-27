@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createCollection, deleteCollection, uploadCollectionImage } from "@/lib/admin-actions";
 
 export default async function AdminCollectionsPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data: collections } = await supabase.from("collection").select("*").order("name");
 
   return (

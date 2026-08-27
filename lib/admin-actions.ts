@@ -2,7 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
+
+async function requireAdmin() {
+  if (!(await isAdminAuthenticated())) {
+    throw new Error("Unauthorized");
+  }
+}
 
 function slugify(input: string) {
   return input
@@ -14,21 +21,24 @@ function slugify(input: string) {
 
 // --- Category ---
 export async function createCategory(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const name = String(formData.get("name") ?? "");
   await supabase.from("category").insert({ name, slug: slugify(name) });
   revalidatePath("/admin/categories");
 }
 
 export async function deleteCategory(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   await supabase.from("category").delete().eq("id", String(formData.get("id")));
   revalidatePath("/admin/categories");
 }
 
 // --- Collection ---
 export async function createCollection(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const name = String(formData.get("name") ?? "");
   const image_url = String(formData.get("image_url") ?? "") || null;
   await supabase.from("collection").insert({ name, slug: slugify(name), image_url });
@@ -36,7 +46,8 @@ export async function createCollection(formData: FormData) {
 }
 
 export async function updateCollectionImage(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const id = String(formData.get("id"));
   const image_url = String(formData.get("image_url") ?? "");
   await supabase.from("collection").update({ image_url }).eq("id", id);
@@ -44,14 +55,16 @@ export async function updateCollectionImage(formData: FormData) {
 }
 
 export async function deleteCollection(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   await supabase.from("collection").delete().eq("id", String(formData.get("id")));
   revalidatePath("/admin/collections");
 }
 
 // --- Product ---
 export async function createProduct(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const name = String(formData.get("name") ?? "");
   const { data, error } = await supabase
     .from("product")
@@ -73,7 +86,8 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const id = String(formData.get("id"));
   await supabase
     .from("product")
@@ -93,7 +107,8 @@ export async function updateProduct(formData: FormData) {
 }
 
 export async function toggleFeatured(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const id = String(formData.get("id"));
   const next = formData.get("next") === "true";
   await supabase.from("product").update({ is_featured: next }).eq("id", id);
@@ -101,14 +116,16 @@ export async function toggleFeatured(formData: FormData) {
 }
 
 export async function deleteProduct(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   await supabase.from("product").delete().eq("id", String(formData.get("id")));
   revalidatePath("/admin/products");
   redirect("/admin/products");
 }
 
 export async function setProductCollections(productId: string, collectionIds: string[]) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   await supabase.from("product_collection").delete().eq("product_id", productId);
   if (collectionIds.length > 0) {
     await supabase
@@ -126,7 +143,8 @@ export async function updateProductCollectionsAction(formData: FormData) {
 
 // --- Product Variant ---
 export async function createVariant(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const product_id = String(formData.get("product_id"));
   const priceRaw = formData.get("price");
   await supabase.from("product_variant").insert({
@@ -139,7 +157,8 @@ export async function createVariant(formData: FormData) {
 }
 
 export async function updateVariant(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const id = String(formData.get("id"));
   const product_id = String(formData.get("product_id"));
   const priceRaw = formData.get("price");
@@ -155,7 +174,8 @@ export async function updateVariant(formData: FormData) {
 }
 
 export async function deleteVariant(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const product_id = String(formData.get("product_id"));
   await supabase.from("product_variant").delete().eq("id", String(formData.get("id")));
   revalidatePath(`/admin/products/${product_id}`);
@@ -163,7 +183,8 @@ export async function deleteVariant(formData: FormData) {
 
 // --- Product Image ---
 export async function attachProductImage(productId: string, url: string) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const { count } = await supabase
     .from("product_image")
     .select("id", { count: "exact", head: true })
@@ -173,7 +194,8 @@ export async function attachProductImage(productId: string, url: string) {
 }
 
 export async function uploadProductImage(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const productId = String(formData.get("product_id"));
   const file = formData.get("file") as File;
   if (!file || file.size === 0) return;
@@ -187,7 +209,8 @@ export async function uploadProductImage(formData: FormData) {
 }
 
 export async function uploadCollectionImage(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const id = String(formData.get("id"));
   const file = formData.get("file") as File;
   if (!file || file.size === 0) return;
@@ -202,7 +225,8 @@ export async function uploadCollectionImage(formData: FormData) {
 }
 
 export async function deleteProductImage(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const product_id = String(formData.get("product_id"));
   await supabase.from("product_image").delete().eq("id", String(formData.get("id")));
   revalidatePath(`/admin/products/${product_id}`);
@@ -210,7 +234,8 @@ export async function deleteProductImage(formData: FormData) {
 
 // --- Orders ---
 export async function updateOrderStatus(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const id = String(formData.get("id"));
   const status = String(formData.get("status"));
   await supabase.from("order").update({ status }).eq("id", id);
@@ -220,7 +245,8 @@ export async function updateOrderStatus(formData: FormData) {
 
 // --- Reviews ---
 export async function moderateReview(formData: FormData) {
-  const supabase = await createClient();
+  await requireAdmin();
+  const supabase = createAdminClient();
   const id = String(formData.get("id"));
   const status = String(formData.get("status"));
   await supabase.from("review").update({ status }).eq("id", id);

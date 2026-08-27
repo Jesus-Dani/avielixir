@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export default async function AdminDashboard() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const [{ count: products }, { count: orders }, { count: pendingReviews }, { count: customers }] = await Promise.all([
     supabase.from("product").select("id", { count: "exact", head: true }),
     supabase.from("order").select("id", { count: "exact", head: true }),

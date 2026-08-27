@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { formatNaira } from "@/lib/format";
 
 export default async function AdminCustomersPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const [{ data: customers }, { data: orders }] = await Promise.all([
     supabase.from("customer").select("*").order("created_at", { ascending: false }),

@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { moderateReview } from "@/lib/admin-actions";
 
 export default async function AdminReviewsPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data: reviews } = await supabase
     .from("review")
     .select("*, product:product_id(name), customer:customer_id(name)")

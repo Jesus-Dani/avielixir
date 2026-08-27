@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { CookieBanner } from "@/components/layout/CookieBanner";
-import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { GoogleAnalytics } from "@/components/layout/GoogleAnalytics";
 
 const cormorant = Cormorant_Garamond({
@@ -23,11 +19,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${cormorant.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <CookieBanner />
-        <WhatsAppButton />
+        {children}
         <GoogleAnalytics />
       </body>
     </html>

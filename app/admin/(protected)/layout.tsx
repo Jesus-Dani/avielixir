@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { SignOutButton } from "@/components/account/SignOutButton";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton";
 
 const NAV = [
   { href: "/admin", label: "Dashboard" },
@@ -13,16 +13,8 @@ const NAV = [
   { href: "/admin/reviews", label: "Reviews" },
 ];
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login?next=/admin");
-
-  const { data: customer } = await supabase.from("customer").select("is_admin").eq("id", user.id).single();
-  if (!customer?.is_admin) redirect("/");
+export default async function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
+  if (!(await isAdminAuthenticated())) redirect("/admin/login");
 
   return (
     <div className="mx-auto flex max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:px-8">
@@ -36,7 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           ))}
         </nav>
         <div className="mt-8">
-          <SignOutButton />
+          <AdminLogoutButton />
         </div>
       </aside>
       <div className="flex-1">{children}</div>
