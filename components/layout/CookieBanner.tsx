@@ -12,7 +12,7 @@ export function CookieBanner() {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- reading localStorage requires client-only effect
       if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
     } catch {
-      // localStorage unavailable (private mode etc.) — skip banner rather than error.
+      // localStorage unavailable (private mode etc.), skip banner rather than error.
     }
   }, []);
 

@@ -20,7 +20,7 @@ const SLIDES = [
   {
     eyebrow: "Every mood,",
     headline: "Every Moment",
-    body: "From fresh mornings to warm nights — find the fragrance for right now.",
+    body: "From fresh mornings to warm nights, find the fragrance for right now.",
     cta: { href: "/shop", label: "Shop All Scents" },
   },
 ];

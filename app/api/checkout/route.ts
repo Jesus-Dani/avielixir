@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient();
 
-  // Re-price and re-check stock server-side — never trust client-supplied prices.
+  // Re-price and re-check stock server-side, never trust client-supplied prices.
   const variantIds = lines.map((l) => l.variantId);
   const { data: variants, error: variantError } = await admin
     .from("product_variant")

@@ -20,7 +20,7 @@ export default async function AdminReviewsPage() {
           {reviews.map((r) => (
             <li key={r.id} className="rounded-md border border-border p-5">
               <p className="font-medium text-ink">{r.product?.name}</p>
-              <p className="text-sm text-ink-soft">By {r.customer?.name ?? "Customer"} — {r.rating}★</p>
+              <p className="text-sm text-ink-soft">By {r.customer?.name ?? "Customer"} ({r.rating}★)</p>
               {r.comment && <p className="mt-2 text-sm text-ink-soft">{r.comment}</p>}
               <div className="mt-3 flex gap-3">
                 <form action={moderateReview}>

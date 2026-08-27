@@ -5,8 +5,8 @@ export default function PrivacyPage() {
       <h1 className="font-display mt-2 text-4xl text-ink">Privacy Policy</h1>
       <div className="mt-8 space-y-5 text-ink-soft">
         <p>
-          Avi Elixir collects the information you provide when creating an account or placing an order — name,
-          email, phone number, and delivery address — solely to process your orders and communicate with you
+          Avi Elixir collects the information you provide when creating an account or placing an order (name,
+          email, phone number, and delivery address) solely to process your orders and communicate with you
           about them.
         </p>
         <p>

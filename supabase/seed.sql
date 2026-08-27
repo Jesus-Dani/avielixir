@@ -12,9 +12,9 @@ insert into category (name, slug) values
   ('Atomizer', 'atomizer');
 
 insert into collection (name, slug, image_url) values
-  ('Floral', 'floral', 'https://placehold.co/800x600/8a5d63/faf3ef?text=Floral'),
-  ('Woody & Warm', 'woody-warm', 'https://placehold.co/800x600/5c3a42/faf3ef?text=Woody+%26+Warm'),
-  ('Fresh & Fruity', 'fresh-fruity', 'https://placehold.co/800x600/b9915a/faf3ef?text=Fresh+%26+Fruity');
+  ('Floral', 'floral', 'https://placehold.co/800x600/8a5d63/faf3ef.png?text=Floral'),
+  ('Woody & Warm', 'woody-warm', 'https://placehold.co/800x600/5c3a42/faf3ef.png?text=Woody+%26+Warm'),
+  ('Fresh & Fruity', 'fresh-fruity', 'https://placehold.co/800x600/b9915a/faf3ef.png?text=Fresh+%26+Fruity');
 
 with p as (
   insert into product (category_id, name, slug, scent_notes, usage_instructions, base_price, is_featured)
@@ -36,7 +36,7 @@ select id, size_label, price, stock from p, (values ('39ml', null::numeric, 20),
 
 with p as (
   insert into product (category_id, name, slug, scent_notes, usage_instructions, base_price, is_featured)
-  select id, 'Oud Reve', 'oud-reve', 'Oud, saffron, warm spice', 'A little goes a long way — one spray per pulse point.', 52000, true
+  select id, 'Oud Reve', 'oud-reve', 'Oud, saffron, warm spice', 'A little goes a long way, one spray per pulse point.', 52000, true
   from category where slug = 'perfume'
   returning id
 )
@@ -71,7 +71,7 @@ insert into product_variant (product_id, size_label, price, stock_quantity)
 select id, size_label, price, stock from p, (values ('10ml', null::numeric, 35)) as v(size_label, price, stock);
 
 insert into product_image (product_id, url, sort_order)
-select id, 'https://placehold.co/700x700/f3e6e0/1c1512?text=' || replace(name, ' ', '+'), 0 from product;
+select id, 'https://placehold.co/700x700/f3e6e0/1c1512.png?text=' || replace(name, ' ', '+'), 0 from product;
 
 insert into product_collection (product_id, collection_id)
 select p.id, c.id from product p, collection c

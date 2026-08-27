@@ -24,7 +24,7 @@ export async function ReviewsSection({ productId }: { productId: string }) {
       <h2 className="font-display text-2xl text-ink">Reviews</h2>
 
       {approved.length === 0 ? (
-        <p className="mt-4 text-sm text-ink-soft">No reviews yet — be the first to share your experience.</p>
+        <p className="mt-4 text-sm text-ink-soft">No reviews yet. Be the first to share your experience.</p>
       ) : (
         <ul className="mt-6 space-y-6">
           {approved.map((review) => (

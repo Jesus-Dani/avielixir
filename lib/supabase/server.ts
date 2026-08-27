@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-// Server Components / Route Handlers / Server Actions — runs with the
+// Server Components / Route Handlers / Server Actions, runs with the
 // signed-in user's session via cookies, so RLS applies as that user.
 export async function createClient() {
   const cookieStore = await cookies();

@@ -7,7 +7,7 @@ export default function TermsPage() {
         <p>By using the Avi Elixir website and placing an order, you agree to the following terms.</p>
         <p>
           Prices displayed are in Nigerian Naira (₦) and are final and all-inclusive at checkout. Checkout covers
-          product cost only — delivery fees are agreed separately after payment, as described in our Shipping &amp;
+          product cost only. Delivery fees are agreed separately after payment, as described in our Shipping &amp;
           Delivery page.
         </p>
         <p>All sales are final; see our Returns Policy for details.</p>

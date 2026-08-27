@@ -84,7 +84,7 @@ export default async function AccountPage() {
                 <p className="mt-2 text-sm font-medium text-ink">{formatNaira(order.subtotal)}</p>
                 {order.status !== "pending_payment" && order.status !== "cancelled" && (
                   <p className="mt-1 text-xs text-ink-soft">
-                    Delivery is arranged separately — we&rsquo;ll reach out about your delivery fee and timing.
+                    Delivery is arranged separately: we&rsquo;ll reach out about your delivery fee and timing.
                   </p>
                 )}
               </li>
@@ -96,7 +96,7 @@ export default async function AccountPage() {
       <section className="mt-14 border-t border-border pt-10">
         <h2 className="font-display text-xl text-ink">Wishlist</h2>
         {!wishlist || wishlist.length === 0 ? (
-          <p className="mt-4 text-sm text-ink-soft">Nothing saved yet — tap the heart on any product size to save it here.</p>
+          <p className="mt-4 text-sm text-ink-soft">Nothing saved yet. Tap the heart on any product size to save it here.</p>
         ) : (
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
             {wishlist.map((w) => {

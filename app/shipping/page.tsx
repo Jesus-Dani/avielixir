@@ -5,7 +5,7 @@ export default function ShippingPage() {
       <h1 className="font-display mt-2 text-4xl text-ink">Shipping &amp; Delivery</h1>
       <div className="mt-8 space-y-5 text-ink-soft">
         <p>
-          Checkout on our site covers your product total only — it does not include a delivery fee. Once your
+          Checkout on our site covers your product total only. It does not include a delivery fee. Once your
           payment is confirmed, our team will contact you directly by phone or WhatsApp to confirm your delivery
           address and agree on a delivery cost based on your location.
         </p>

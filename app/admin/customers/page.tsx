@@ -30,8 +30,8 @@ export default async function AdminCustomersPage() {
         <tbody>
           {(customers ?? []).map((c) => (
             <tr key={c.id} className="border-b border-border">
-              <td className="py-3">{c.name ?? "—"}{c.is_admin && <span className="ml-2 text-xs text-gold">Admin</span>}</td>
-              <td className="py-3 text-ink-soft">{c.phone ?? "—"}</td>
+              <td className="py-3">{c.name ?? "N/A"}{c.is_admin && <span className="ml-2 text-xs text-gold">Admin</span>}</td>
+              <td className="py-3 text-ink-soft">{c.phone ?? "N/A"}</td>
               <td className="py-3 text-ink-soft">{new Date(c.created_at).toLocaleDateString()}</td>
               <td className="py-3 font-medium text-ink">{formatNaira(lifetimeValueByCustomer.get(c.id) ?? 0)}</td>
             </tr>

@@ -6,7 +6,7 @@ interface InitializeResult {
   data: { authorization_url: string; access_code: string; reference: string };
 }
 
-/** Initializes a Paystack transaction for the order subtotal only — never delivery fee. */
+/** Initializes a Paystack transaction for the order subtotal only, never delivery fee. */
 export async function initializeTransaction(params: {
   email: string;
   amountKobo: number;
