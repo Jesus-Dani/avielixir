@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -35,8 +36,17 @@ export function Hero() {
   const slide = SLIDES[index];
 
   return (
-    <section className="relative flex min-h-[520px] items-center overflow-hidden bg-mauve-deep text-white sm:min-h-[620px]">
-      <div className="absolute inset-0 bg-gradient-to-br from-mauve-deep via-mauve-deep to-mauve-deep-2" />
+    <section className="relative flex min-h-[560px] items-center overflow-hidden bg-mauve-deep text-white sm:min-h-[680px]">
+      <Image
+        src="/images/hero.jpg"
+        alt="A woman surrounded by hands holding Avi Elixir fragrance bottles"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-mauve-deep-2/90 via-mauve-deep-2/40 to-mauve-deep-2/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-mauve-deep-2/70 via-transparent to-transparent" />
       <div className="relative mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <p className="eyebrow text-gold-soft">{slide.eyebrow}</p>
         <h1 className="font-display mt-3 max-w-xl text-5xl leading-tight sm:text-6xl">{slide.headline}</h1>
