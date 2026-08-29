@@ -238,7 +238,16 @@ export async function updateOrderStatus(formData: FormData) {
   const supabase = createAdminClient();
   const id = String(formData.get("id"));
   const status = String(formData.get("status"));
-  await supabase.from("order").update({ status }).eq("id", id);
+
+  if (status === "paid") {
+    // Atomic: decrements variant stock and flips status, only if still pending_payment
+    // (guards against double-decrementing stock if an order is already paid).
+    const { error } = await supabase.rpc("complete_order_payment", { p_order_id: id, p_reference: `manual:${id}` });
+    if (error) throw new Error(error.message);
+  } else {
+    await supabase.from("order").update({ status }).eq("id", id);
+  }
+
   revalidatePath(`/admin/orders/${id}`);
   revalidatePath("/admin/orders");
 }

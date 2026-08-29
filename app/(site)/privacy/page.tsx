@@ -6,12 +6,13 @@ export default function PrivacyPage() {
       <div className="mt-8 space-y-5 text-ink-soft">
         <p>
           Avi Elixir collects the information you provide when creating an account or placing an order (name,
-          email, phone number, and delivery address) solely to process your orders and communicate with you
-          about them.
+          email, phone number, delivery address, and a screenshot of your payment receipt) solely to process your
+          orders, verify payment, and communicate with you about them.
         </p>
         <p>
-          We use Paystack to process payments; we never see or store your card details. We use Resend to send
-          order confirmation emails, and Google Analytics to understand how visitors use our site in aggregate.
+          Payment is made by direct bank transfer; the receipt you upload is stored securely and used only to
+          confirm your payment. We use Resend to send order confirmation emails, and Google Analytics to
+          understand how visitors use our site in aggregate.
         </p>
         <p>
           We do not sell or share your personal information with third parties for marketing purposes. You can

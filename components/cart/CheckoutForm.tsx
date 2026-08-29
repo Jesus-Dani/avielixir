@@ -1,22 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart-store";
 import { formatNaira } from "@/lib/format";
+import { createClient } from "@/lib/supabase/client";
+import { getBankDetails } from "@/lib/bank-details";
 
 export function CheckoutForm({
-  isLoggedIn,
-  initialEmail,
+  userId,
+  email,
   initialName,
   initialPhone,
   initialAddress,
 }: {
-  isLoggedIn: boolean;
-  initialEmail: string;
+  userId: string;
+  email: string;
   initialName: string;
   initialPhone: string;
   initialAddress: string;
 }) {
+  const router = useRouter();
   const lines = useCartStore((s) => s.lines);
   const subtotal = useCartStore((s) => s.subtotal());
   const [mounted, setMounted] = useState(false);
@@ -25,19 +29,37 @@ export function CheckoutForm({
     setMounted(true);
   }, []);
 
-  const [email, setEmail] = useState(initialEmail);
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState(initialPhone);
   const [address, setAddress] = useState(initialAddress);
+  const [receipt, setReceipt] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState("");
+
+  const bank = getBankDetails();
 
   if (!mounted) return null;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!receipt) {
+      setError("Please upload a screenshot of your transfer receipt.");
+      setStatus("error");
+      return;
+    }
+
     setStatus("submitting");
     setError("");
+
+    const supabase = createClient();
+    const path = `${userId}/${Date.now()}-${receipt.name}`;
+    const { error: uploadError } = await supabase.storage.from("order-receipts").upload(path, receipt);
+
+    if (uploadError) {
+      setError("Could not upload your receipt. Please try again.");
+      setStatus("error");
+      return;
+    }
 
     const res = await fetch("/api/checkout", {
       method: "POST",
@@ -47,7 +69,7 @@ export function CheckoutForm({
         name,
         phone,
         address,
-        deliveryPhoneNote: phone,
+        receiptPath: path,
         lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
       }),
     });
@@ -59,28 +81,21 @@ export function CheckoutForm({
       return;
     }
 
-    window.location.href = body.authorizationUrl;
+    router.push(`/checkout/confirmation/${body.orderId}`);
   }
 
   return (
     <form onSubmit={submit} className="grid gap-10 md:grid-cols-2">
       <div className="space-y-5">
         <h2 className="font-display text-xl text-ink">Contact & Delivery</h2>
-        {!isLoggedIn && (
-          <p className="text-sm text-ink-soft">
-            Checking out as a guest. <a href="/login" className="text-mauve-deep underline">Sign in</a> to save your details for next time.
-          </p>
-        )}
         <div>
           <label htmlFor="email" className="eyebrow block text-ink-soft">Email</label>
           <input
             id="email"
             type="email"
-            required
-            disabled={isLoggedIn}
+            disabled
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm disabled:bg-bg-soft"
+            className="mt-2 w-full rounded-md border border-border bg-bg-soft px-3 py-2 text-sm"
           />
         </div>
         <div>
@@ -136,6 +151,31 @@ export function CheckoutForm({
           This total is for products only. Avi Elixir will contact you separately to arrange your delivery fee.
         </p>
 
+        <div className="mt-6 rounded-md bg-bg-soft p-4">
+          <p className="eyebrow text-mauve">Pay by Bank Transfer</p>
+          <dl className="mt-2 space-y-1 text-sm text-ink">
+            <div className="flex justify-between"><dt className="text-ink-soft">Bank</dt><dd>{bank.bankName}</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-soft">Account Number</dt><dd className="font-medium">{bank.accountNumber}</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-soft">Account Name</dt><dd>{bank.accountName}</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-soft">Amount</dt><dd className="font-medium">{formatNaira(subtotal)}</dd></div>
+          </dl>
+          <p className="mt-3 text-xs text-ink-soft">
+            Transfer the amount above, then upload a screenshot of your receipt below to complete your order.
+          </p>
+        </div>
+
+        <div className="mt-4">
+          <label htmlFor="receipt" className="eyebrow block text-ink-soft">Payment Receipt</label>
+          <input
+            id="receipt"
+            type="file"
+            accept="image/*"
+            required
+            onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
+            className="mt-2 w-full text-sm"
+          />
+        </div>
+
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
         <button
@@ -143,7 +183,7 @@ export function CheckoutForm({
           disabled={status === "submitting" || lines.length === 0}
           className="mt-6 w-full rounded-full bg-mauve-deep px-8 py-3 text-sm font-medium text-white hover:bg-mauve-deep-2 disabled:opacity-60"
         >
-          {status === "submitting" ? "Redirecting to payment..." : "Pay with Paystack"}
+          {status === "submitting" ? "Submitting Order..." : "Submit Order"}
         </button>
       </div>
     </form>

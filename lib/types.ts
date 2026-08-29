@@ -95,6 +95,7 @@ export interface Order {
   paystack_reference: string | null;
   delivery_fee: number | null;
   delivery_phone_note: string | null;
+  receipt_url: string | null;
   created_at: string;
   items?: OrderItem[];
 }

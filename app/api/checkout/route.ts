@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { initializeTransaction } from "@/lib/paystack";
 import { effectivePrice } from "@/lib/types";
 
 interface CheckoutLine {
@@ -12,25 +11,28 @@ interface CheckoutLine {
 export async function POST(request: Request) {
   const body = await request.json();
   const {
-    email,
     name,
     phone,
     address,
-    deliveryPhoneNote,
+    receiptPath,
     lines,
-  }: { email: string; name?: string; phone?: string; address?: string; deliveryPhoneNote?: string; lines: CheckoutLine[] } = body;
+  }: { name?: string; phone?: string; address?: string; receiptPath?: string; lines: CheckoutLine[] } = body;
 
   if (!lines?.length) {
     return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
   }
-  if (!email) {
-    return NextResponse.json({ error: "An email address is required." }, { status: 400 });
+  if (!receiptPath) {
+    return NextResponse.json({ error: "Please upload a screenshot of your transfer receipt." }, { status: 400 });
   }
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Please sign in to check out." }, { status: 401 });
+  }
 
   const admin = createAdminClient();
 
@@ -62,20 +64,18 @@ export async function POST(request: Request) {
     orderItems.push({ product_variant_id: variant.id, quantity: line.quantity, unit_price: unitPrice });
   }
 
-  if (user) {
-    await admin
-      .from("customer")
-      .update({ name: name ?? undefined, phone: phone ?? undefined, saved_address: address ?? undefined })
-      .eq("id", user.id);
-  }
+  await admin
+    .from("customer")
+    .update({ name: name ?? undefined, phone: phone ?? undefined, saved_address: address ?? undefined })
+    .eq("id", user.id);
 
   const { data: order, error: orderError } = await admin
     .from("order")
     .insert({
-      customer_id: user?.id ?? null,
-      guest_email: user ? null : email,
+      customer_id: user.id,
       subtotal,
-      delivery_phone_note: deliveryPhoneNote ?? phone ?? null,
+      delivery_phone_note: phone ?? null,
+      receipt_url: receiptPath,
       status: "pending_payment",
     })
     .select()
@@ -93,20 +93,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Could not save your order items." }, { status: 500 });
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
-  try {
-    const paystack = await initializeTransaction({
-      email: user?.email ?? email,
-      amountKobo: Math.round(subtotal * 100),
-      reference: order.id,
-      callbackUrl: `${siteUrl}/checkout/success/${order.id}`,
-    });
-    return NextResponse.json({ authorizationUrl: paystack.data.authorization_url, orderId: order.id });
-  } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Payment initialization failed." },
-      { status: 502 }
-    );
-  }
+  return NextResponse.json({ orderId: order.id });
 }

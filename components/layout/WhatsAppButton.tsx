@@ -1,10 +1,12 @@
+import { whatsappLink } from "@/lib/whatsapp";
+
 export function WhatsAppButton() {
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
-  if (!number) return null;
+  const href = whatsappLink();
+  if (!href) return null;
 
   return (
     <a
-      href={`https://wa.me/${number}`}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
