@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types";
-import { effectivePrice } from "@/lib/types";
+import { effectivePrice, mainImage } from "@/lib/types";
 import { formatNaira } from "@/lib/format";
 import { useCartStore } from "@/lib/cart-store";
 import { trackEvent } from "@/lib/ga";
@@ -41,7 +41,7 @@ export function ProductDetail({ product }: { product: Product }) {
         productName: product.name,
         sizeLabel: variant.size_label,
         unitPrice: price,
-        imageUrl: product.images?.[0]?.url ?? null,
+        imageUrl: mainImage(product.images)?.url ?? null,
         stockQuantity: variant.stock_quantity,
       },
       1

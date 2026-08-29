@@ -231,30 +231,39 @@ export async function deleteVariant(formData: FormData) {
 }
 
 // --- Product Image ---
-export async function attachProductImage(productId: string, url: string) {
-  await requireAdmin();
-  const supabase = createAdminClient();
-  const { count } = await supabase
-    .from("product_image")
-    .select("id", { count: "exact", head: true })
-    .eq("product_id", productId);
-  await supabase.from("product_image").insert({ product_id: productId, url, sort_order: count ?? 0 });
-  revalidatePath(`/admin/products/${productId}`);
-}
-
 export async function uploadProductImage(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
   const productId = String(formData.get("product_id"));
-  const file = formData.get("file") as File;
-  if (!file || file.size === 0) return;
+  const files = formData.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
+  if (files.length === 0) return;
 
-  const path = `${productId}/${Date.now()}-${file.name}`;
-  const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
-  if (uploadError) throw new Error(uploadError.message);
+  const { count } = await supabase
+    .from("product_image")
+    .select("id", { count: "exact", head: true })
+    .eq("product_id", productId);
 
-  const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-  await attachProductImage(productId, data.publicUrl);
+  let nextSortOrder = count ?? 0;
+  let failures = 0;
+  for (const file of files) {
+    const path = `${productId}/${Date.now()}-${nextSortOrder}-${file.name}`;
+    const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
+    if (uploadError) {
+      failures++;
+      continue;
+    }
+    const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+    await supabase.from("product_image").insert({ product_id: productId, url: data.publicUrl, sort_order: nextSortOrder });
+    nextSortOrder++;
+  }
+
+  revalidatePath(`/admin/products/${productId}`);
+  if (failures > 0) {
+    redirectWithError(
+      `/admin/products/${productId}`,
+      failures === files.length ? "Image upload failed. Please try again." : `${failures} of ${files.length} images failed to upload.`
+    );
+  }
 }
 
 export async function uploadCollectionImage(formData: FormData) {

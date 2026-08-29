@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/types";
+import { mainImage } from "@/lib/types";
 import { formatNaira } from "@/lib/format";
 
 export function ProductCard({ product }: { product: Product }) {
-  const image = product.images?.[0];
+  const image = mainImage(product.images);
   const lowestPrice = product.variants?.length
     ? Math.min(...product.variants.map((v) => v.price ?? product.base_price))
     : product.base_price;

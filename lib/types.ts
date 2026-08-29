@@ -126,3 +126,9 @@ export interface OrderItem {
 export function effectivePrice(product: Pick<Product, "base_price">, variant: Pick<ProductVariant, "price">) {
   return variant.price ?? product.base_price;
 }
+
+/** The image shown as a product's main photo: lowest sort_order, not upload/query order. */
+export function mainImage(images: ProductImage[] | undefined): ProductImage | undefined {
+  if (!images || images.length === 0) return undefined;
+  return [...images].sort((a, b) => a.sort_order - b.sort_order)[0];
+}

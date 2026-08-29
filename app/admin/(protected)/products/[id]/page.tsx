@@ -147,27 +147,46 @@ export default async function EditProductPage({
 
       <section className="mt-12 border-t border-border pt-8">
         <h2 className="font-display text-xl text-ink">Images</h2>
-        <div className="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-4">
-          {(product.images ?? []).map((img: { id: string; url: string }) => (
-            <div key={img.id} className="relative">
-              <div className="relative aspect-square overflow-hidden rounded-md bg-bg-soft">
-                <Image src={img.url} alt="" fill sizes="150px" className="object-cover" />
+        <p className="mt-1 text-sm text-ink-soft">
+          The first image is used as the product&rsquo;s main photo in the shop and on cards. Upload in the order
+          you want them shown; there&rsquo;s no drag-to-reorder yet, so remove and re-upload to change the order.
+        </p>
+
+        {(product.images ?? []).length === 0 ? (
+          <p className="mt-4 text-sm text-ink-soft">No images yet. Add one or more below.</p>
+        ) : (
+          <div className="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-4">
+            {(product.images as { id: string; url: string; sort_order: number }[])
+              .slice()
+              .sort((a, b) => a.sort_order - b.sort_order)
+              .map((img, i: number) => (
+              <div key={img.id} className="relative">
+                <div className="relative aspect-square overflow-hidden rounded-md bg-bg-soft">
+                  <Image src={img.url} alt="" fill sizes="150px" className="object-cover" />
+                  {i === 0 && (
+                    <span className="absolute left-1 top-1 rounded-full bg-mauve-deep px-2 py-0.5 text-[10px] font-medium text-white">
+                      Main
+                    </span>
+                  )}
+                </div>
+                <form action={deleteProductImage} className="mt-1">
+                  <input type="hidden" name="id" value={img.id} />
+                  <input type="hidden" name="product_id" value={product.id} />
+                  <SubmitButton confirmMessage="Remove this image?" pendingText="Removing..." className="text-xs text-red-600">
+                    Remove
+                  </SubmitButton>
+                </form>
               </div>
-              <form action={deleteProductImage} className="mt-1">
-                <input type="hidden" name="id" value={img.id} />
-                <input type="hidden" name="product_id" value={product.id} />
-                <SubmitButton confirmMessage="Remove this image?" pendingText="Removing..." className="text-xs text-red-600">
-                  Remove
-                </SubmitButton>
-              </form>
-            </div>
-          ))}
-        </div>
-        <form action={uploadProductImage} className="mt-4 flex items-center gap-2">
+            ))}
+          </div>
+        )}
+
+        <form action={uploadProductImage} className="mt-4 flex flex-wrap items-center gap-2">
           <input type="hidden" name="product_id" value={product.id} />
-          <input type="file" name="file" accept="image/*" required className="text-sm" />
+          <label htmlFor="product-images-input" className="sr-only">Choose product images</label>
+          <input id="product-images-input" type="file" name="files" accept="image/*" multiple required className="text-sm" />
           <SubmitButton pendingText="Uploading..." className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">
-            Upload
+            Upload Image(s)
           </SubmitButton>
         </form>
       </section>
