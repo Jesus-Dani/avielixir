@@ -261,3 +261,77 @@ export async function moderateReview(formData: FormData) {
   await supabase.from("review").update({ status }).eq("id", id);
   revalidatePath("/admin/reviews");
 }
+
+// --- Articles ---
+export async function createArticle(formData: FormData) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  const title = String(formData.get("title") ?? "");
+  const status = formData.get("status") === "published" ? "published" : "draft";
+
+  const { data, error } = await supabase
+    .from("article")
+    .insert({
+      title,
+      slug: slugify(title),
+      excerpt: String(formData.get("excerpt") ?? "") || null,
+      content: String(formData.get("content") ?? ""),
+      status,
+      published_at: status === "published" ? new Date().toISOString() : null,
+    })
+    .select()
+    .single();
+
+  if (error || !data) throw new Error(error?.message ?? "Could not create article");
+  redirect(`/admin/articles/${data.id}`);
+}
+
+export async function updateArticle(formData: FormData) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  const id = String(formData.get("id"));
+  const status = formData.get("status") === "published" ? "published" : "draft";
+
+  const { data: existing } = await supabase.from("article").select("status, published_at").eq("id", id).single();
+
+  await supabase
+    .from("article")
+    .update({
+      title: String(formData.get("title") ?? ""),
+      excerpt: String(formData.get("excerpt") ?? "") || null,
+      content: String(formData.get("content") ?? ""),
+      status,
+      published_at: status === "published" ? (existing?.published_at ?? new Date().toISOString()) : existing?.published_at ?? null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  revalidatePath(`/admin/articles/${id}`);
+  revalidatePath("/admin/articles");
+  revalidatePath("/journal");
+}
+
+export async function deleteArticle(formData: FormData) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  await supabase.from("article").delete().eq("id", String(formData.get("id")));
+  revalidatePath("/admin/articles");
+  redirect("/admin/articles");
+}
+
+export async function uploadArticleCoverImage(formData: FormData) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  const id = String(formData.get("id"));
+  const file = formData.get("file") as File;
+  if (!file || file.size === 0) return;
+
+  const path = `articles/${id}/${Date.now()}-${file.name}`;
+  const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
+  if (uploadError) throw new Error(uploadError.message);
+
+  const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+  await supabase.from("article").update({ cover_image_url: data.publicUrl }).eq("id", id);
+  revalidatePath(`/admin/articles/${id}`);
+  revalidatePath("/journal");
+}

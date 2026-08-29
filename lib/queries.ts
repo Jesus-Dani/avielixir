@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Category, Collection, Product } from "@/lib/types";
+import type { Article, Category, Collection, Product } from "@/lib/types";
 
 const PRODUCT_SELECT = "*, category:category_id(*), variants:product_variant(*), images:product_image(*)";
 
@@ -110,4 +110,32 @@ export async function getRelatedProducts(product: Product): Promise<Product[]> {
 
   if (error) return [];
   return (data ?? []) as unknown as Product[];
+}
+
+export async function getPublishedArticles(): Promise<Article[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("article")
+    .select("*")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+
+  if (error) {
+    console.error("getPublishedArticles", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
+export async function getArticleBySlug(slug: string): Promise<Article | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("article")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .single();
+
+  if (error || !data) return null;
+  return data;
 }

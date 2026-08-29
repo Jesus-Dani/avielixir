@@ -20,6 +20,7 @@ const COLUMNS = [
     title: "About",
     links: [
       { href: "/about", label: "Our Story" },
+      { href: "/journal", label: "Journal" },
       { href: "/shipping", label: "Shipping & Delivery" },
       { href: "/returns", label: "Returns Policy" },
     ],

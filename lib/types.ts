@@ -9,6 +9,20 @@ export type OrderStatus =
 export type ReviewStatus = "pending" | "approved" | "rejected";
 
 export type ProductStatus = "active" | "hidden";
+export type ArticleStatus = "draft" | "published";
+
+export interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  cover_image_url: string | null;
+  excerpt: string | null;
+  content: string;
+  status: ArticleStatus;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Category {
   id: string;
