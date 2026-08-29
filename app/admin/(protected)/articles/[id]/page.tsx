@@ -2,10 +2,18 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { updateArticle, deleteArticle, uploadArticleCoverImage } from "@/lib/admin-actions";
-import { ConfirmButton } from "@/components/admin/ConfirmButton";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ErrorBanner } from "@/components/admin/ErrorBanner";
 
-export default async function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditArticlePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
+}) {
   const { id } = await params;
+  const { error } = await searchParams;
   const supabase = createAdminClient();
   const { data: article } = await supabase.from("article").select("*").eq("id", id).single();
 
@@ -14,6 +22,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
   return (
     <div className="max-w-2xl">
       <h1 className="font-display text-3xl text-ink">{article.title}</h1>
+      <ErrorBanner message={error} />
 
       <section className="mt-6">
         <p className="eyebrow text-mauve">Cover Image</p>
@@ -25,7 +34,9 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
         <form action={uploadArticleCoverImage} className="mt-3 flex items-center gap-2">
           <input type="hidden" name="id" value={article.id} />
           <input type="file" name="file" accept="image/*" required className="text-sm" />
-          <button type="submit" className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">Upload</button>
+          <SubmitButton pendingText="Uploading..." className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">
+            Upload
+          </SubmitButton>
         </form>
       </section>
 
@@ -50,16 +61,20 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
             <option value="published">Published</option>
           </select>
         </div>
-        <button type="submit" className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2">
+        <SubmitButton className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2" pendingText="Saving...">
           Save Changes
-        </button>
+        </SubmitButton>
       </form>
 
       <form action={deleteArticle} className="mt-4">
         <input type="hidden" name="id" value={article.id} />
-        <ConfirmButton confirmMessage={`Delete "${article.title}"? This can't be undone.`} className="text-sm text-red-600 underline">
+        <SubmitButton
+          confirmMessage={`Delete "${article.title}"? This can't be undone.`}
+          pendingText="Deleting..."
+          className="text-sm text-red-600 underline"
+        >
           Delete Article
-        </ConfirmButton>
+        </SubmitButton>
       </form>
     </div>
   );

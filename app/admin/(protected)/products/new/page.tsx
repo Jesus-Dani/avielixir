@@ -1,9 +1,13 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createProduct } from "@/lib/admin-actions";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 export default async function NewProductPage() {
   const supabase = createAdminClient();
-  const { data: categories } = await supabase.from("category").select("*").order("name");
+  const [{ data: categories }, { data: collections }] = await Promise.all([
+    supabase.from("category").select("*").order("name"),
+    supabase.from("collection").select("*").order("name"),
+  ]);
 
   return (
     <div className="max-w-xl">
@@ -33,15 +37,32 @@ export default async function NewProductPage() {
           <label htmlFor="usage_instructions" className="eyebrow block text-ink-soft">Usage Instructions</label>
           <textarea id="usage_instructions" name="usage_instructions" rows={2} className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
         </div>
+        {(collections ?? []).length > 0 && (
+          <div>
+            <p className="eyebrow block text-ink-soft">Collections</p>
+            <div className="mt-2 space-y-2">
+              {(collections ?? []).map((c) => (
+                <label key={c.id} className="flex items-center gap-2 text-sm text-ink-soft">
+                  <input type="checkbox" name="collection_ids" value={c.id} />
+                  {c.name}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+        <div>
+          <label htmlFor="images" className="eyebrow block text-ink-soft">Images</label>
+          <input id="images" name="images" type="file" accept="image/*" multiple className="mt-2 w-full text-sm" />
+        </div>
         <label className="flex items-center gap-2 text-sm text-ink-soft">
           <input type="checkbox" name="is_featured" /> Featured on homepage
         </label>
-        <button type="submit" className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2">
+        <SubmitButton className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2" pendingText="Creating...">
           Create Product
-        </button>
+        </SubmitButton>
       </form>
       <p className="mt-4 text-xs text-ink-soft">
-        Sizes, stock, images, and collections are added on the next screen after you create the product.
+        Sizes and stock are added on the next screen after you create the product.
       </p>
     </div>
   );

@@ -1,18 +1,27 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createCategory, deleteCategory } from "@/lib/admin-actions";
-import { ConfirmButton } from "@/components/admin/ConfirmButton";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ErrorBanner } from "@/components/admin/ErrorBanner";
 
-export default async function AdminCategoriesPage() {
+export default async function AdminCategoriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const supabase = createAdminClient();
   const { data: categories } = await supabase.from("category").select("*").order("name");
 
   return (
     <div>
       <h1 className="font-display text-3xl text-ink">Categories</h1>
+      <ErrorBanner message={error} />
 
       <form action={createCategory} className="mt-6 flex max-w-md gap-2">
         <input name="name" required placeholder="Category name" className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm" />
-        <button type="submit" className="rounded-full bg-mauve-deep px-5 py-2 text-sm text-white hover:bg-mauve-deep-2">Add</button>
+        <SubmitButton className="rounded-full bg-mauve-deep px-5 py-2 text-sm text-white hover:bg-mauve-deep-2" pendingText="Adding...">
+          Add
+        </SubmitButton>
       </form>
 
       <ul className="mt-8 divide-y divide-border border-y border-border">
@@ -21,12 +30,13 @@ export default async function AdminCategoriesPage() {
             <span className="text-ink">{cat.name}</span>
             <form action={deleteCategory}>
               <input type="hidden" name="id" value={cat.id} />
-              <ConfirmButton
+              <SubmitButton
                 confirmMessage={`Delete category "${cat.name}"? This can't be undone, and will fail if products still use it.`}
+                pendingText="Deleting..."
                 className="text-sm text-ink-soft hover:text-red-600"
               >
                 Delete
-              </ConfirmButton>
+              </SubmitButton>
             </form>
           </li>
         ))}

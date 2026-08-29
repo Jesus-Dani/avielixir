@@ -4,11 +4,20 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { updateOrderStatus } from "@/lib/admin-actions";
 import { formatNaira } from "@/lib/format";
 import { OrderItemsList } from "@/components/order/OrderItemsList";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ErrorBanner } from "@/components/admin/ErrorBanner";
 
 const STATUSES = ["pending_payment", "paid", "processing", "shipped", "delivered", "cancelled"];
 
-export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminOrderDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
+}) {
   const { id } = await params;
+  const { error } = await searchParams;
   const supabase = createAdminClient();
 
   const { data: order } = await supabase
@@ -28,6 +37,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
   return (
     <div className="max-w-xl">
       <h1 className="font-display text-3xl text-ink">Order #{order.id.slice(0, 8)}</h1>
+      <ErrorBanner message={error} />
 
       <div className="mt-6 rounded-md border border-border p-5">
         <p className="text-sm text-ink-soft">Customer</p>
@@ -61,9 +71,9 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
-        <button type="submit" className="rounded-full bg-mauve-deep px-5 py-2 text-sm text-white hover:bg-mauve-deep-2">
+        <SubmitButton pendingText="Updating..." className="rounded-full bg-mauve-deep px-5 py-2 text-sm text-white hover:bg-mauve-deep-2">
           Update Status
-        </button>
+        </SubmitButton>
       </form>
       <p className="mt-2 text-xs text-ink-soft">
         Setting status to &ldquo;paid&rdquo; decrements stock for this order&rsquo;s items. Verify the receipt against

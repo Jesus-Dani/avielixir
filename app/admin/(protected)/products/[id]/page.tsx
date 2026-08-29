@@ -11,10 +11,18 @@ import {
   deleteProductImage,
   updateProductCollectionsAction,
 } from "@/lib/admin-actions";
-import { ConfirmButton } from "@/components/admin/ConfirmButton";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ErrorBanner } from "@/components/admin/ErrorBanner";
 
-export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
+}) {
   const { id } = await params;
+  const { error } = await searchParams;
   const supabase = createAdminClient();
 
   const [{ data: product }, { data: categories }, { data: collections }, { data: productCollections }] = await Promise.all([
@@ -31,6 +39,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   return (
     <div className="max-w-2xl">
       <h1 className="font-display text-3xl text-ink">{product.name}</h1>
+      <ErrorBanner message={error} />
 
       <form action={updateProduct} className="mt-8 space-y-4">
         <input type="hidden" name="id" value={product.id} />
@@ -68,19 +77,20 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
         <label className="flex items-center gap-2 text-sm text-ink-soft">
           <input type="checkbox" name="is_featured" defaultChecked={product.is_featured} /> Featured on homepage
         </label>
-        <button type="submit" className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2">
+        <SubmitButton className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2" pendingText="Saving...">
           Save Changes
-        </button>
+        </SubmitButton>
       </form>
 
       <form action={deleteProduct} className="mt-4">
         <input type="hidden" name="id" value={product.id} />
-        <ConfirmButton
+        <SubmitButton
           confirmMessage={`Delete "${product.name}"? This removes all its sizes and images too, and can't be undone.`}
+          pendingText="Deleting..."
           className="text-sm text-red-600 underline"
         >
           Delete Product
-        </ConfirmButton>
+        </SubmitButton>
       </form>
 
       <section className="mt-12 border-t border-border pt-8">
@@ -93,9 +103,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
               {c.name}
             </label>
           ))}
-          <button type="submit" className="rounded-full border border-border px-5 py-1.5 text-sm text-ink-soft hover:border-mauve-deep">
+          <SubmitButton pendingText="Saving..." className="rounded-full border border-border px-5 py-1.5 text-sm text-ink-soft hover:border-mauve-deep">
             Save Collections
-          </button>
+          </SubmitButton>
         </form>
       </section>
 
@@ -110,14 +120,16 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
                 <input name="size_label" defaultValue={v.size_label} className="w-24 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
                 <input name="price" type="number" defaultValue={v.price ?? ""} placeholder={`base: ${product.base_price}`} className="w-28 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
                 <input name="stock_quantity" type="number" defaultValue={v.stock_quantity} className="w-20 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
-                <button type="submit" className="rounded-full border border-border px-3 py-1 text-xs text-ink-soft hover:border-mauve-deep">Save</button>
+                <SubmitButton pendingText="Saving..." className="rounded-full border border-border px-3 py-1 text-xs text-ink-soft hover:border-mauve-deep">
+                  Save
+                </SubmitButton>
               </form>
               <form action={deleteVariant}>
                 <input type="hidden" name="id" value={v.id} />
                 <input type="hidden" name="product_id" value={product.id} />
-                <ConfirmButton confirmMessage={`Delete the ${v.size_label} size?`} className="text-xs text-red-600">
+                <SubmitButton confirmMessage={`Delete the ${v.size_label} size?`} pendingText="Deleting..." className="text-xs text-red-600">
                   Delete
-                </ConfirmButton>
+                </SubmitButton>
               </form>
             </li>
           ))}
@@ -127,7 +139,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           <input name="size_label" placeholder="e.g. 50ml" required className="w-24 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
           <input name="price" type="number" placeholder="Price (optional)" className="w-32 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
           <input name="stock_quantity" type="number" placeholder="Stock" defaultValue={0} className="w-20 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
-          <button type="submit" className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">Add Size</button>
+          <SubmitButton pendingText="Adding..." className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">
+            Add Size
+          </SubmitButton>
         </form>
       </section>
 
@@ -142,9 +156,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
               <form action={deleteProductImage} className="mt-1">
                 <input type="hidden" name="id" value={img.id} />
                 <input type="hidden" name="product_id" value={product.id} />
-                <ConfirmButton confirmMessage="Remove this image?" className="text-xs text-red-600">
+                <SubmitButton confirmMessage="Remove this image?" pendingText="Removing..." className="text-xs text-red-600">
                   Remove
-                </ConfirmButton>
+                </SubmitButton>
               </form>
             </div>
           ))}
@@ -152,7 +166,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
         <form action={uploadProductImage} className="mt-4 flex items-center gap-2">
           <input type="hidden" name="product_id" value={product.id} />
           <input type="file" name="file" accept="image/*" required className="text-sm" />
-          <button type="submit" className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">Upload</button>
+          <SubmitButton pendingText="Uploading..." className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">
+            Upload
+          </SubmitButton>
         </form>
       </section>
     </div>

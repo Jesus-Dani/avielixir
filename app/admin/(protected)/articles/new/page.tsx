@@ -1,4 +1,5 @@
 import { createArticle } from "@/lib/admin-actions";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 export default function NewArticlePage() {
   return (
@@ -24,9 +25,9 @@ export default function NewArticlePage() {
             <option value="published">Published</option>
           </select>
         </div>
-        <button type="submit" className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2">
+        <SubmitButton className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2" pendingText="Creating...">
           Create Article
-        </button>
+        </SubmitButton>
       </form>
       <p className="mt-4 text-xs text-ink-soft">You can add a cover image after creating the article.</p>
     </div>

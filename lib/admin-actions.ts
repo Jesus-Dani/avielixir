@@ -19,6 +19,13 @@ function slugify(input: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+/** Postgres foreign-key-violation code, thrown when a delete is blocked by a referencing row. */
+const FK_VIOLATION = "23503";
+
+function redirectWithError(path: string, message: string): never {
+  redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
 // --- Category ---
 export async function createCategory(formData: FormData) {
   await requireAdmin();
@@ -31,8 +38,14 @@ export async function createCategory(formData: FormData) {
 export async function deleteCategory(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
-  await supabase.from("category").delete().eq("id", String(formData.get("id")));
+  const { error } = await supabase.from("category").delete().eq("id", String(formData.get("id")));
   revalidatePath("/admin/categories");
+  if (error) {
+    redirectWithError(
+      "/admin/categories",
+      error.code === FK_VIOLATION ? "Can't delete: one or more products still use this category." : error.message
+    );
+  }
 }
 
 // --- Collection ---
@@ -57,8 +70,9 @@ export async function updateCollectionImage(formData: FormData) {
 export async function deleteCollection(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
-  await supabase.from("collection").delete().eq("id", String(formData.get("id")));
+  const { error } = await supabase.from("collection").delete().eq("id", String(formData.get("id")));
   revalidatePath("/admin/collections");
+  if (error) redirectWithError("/admin/collections", error.message);
 }
 
 // --- Product ---
@@ -82,6 +96,24 @@ export async function createProduct(formData: FormData) {
     .single();
 
   if (error || !data) throw new Error(error?.message ?? "Could not create product");
+
+  const collectionIds = formData.getAll("collection_ids").map(String);
+  if (collectionIds.length > 0) {
+    await supabase
+      .from("product_collection")
+      .insert(collectionIds.map((collection_id) => ({ product_id: data.id, collection_id })));
+  }
+
+  const imageFiles = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
+  for (let i = 0; i < imageFiles.length; i++) {
+    const file = imageFiles[i];
+    const path = `${data.id}/${Date.now()}-${i}-${file.name}`;
+    const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
+    if (uploadError) continue;
+    const { data: publicUrlData } = supabase.storage.from("product-images").getPublicUrl(path);
+    await supabase.from("product_image").insert({ product_id: data.id, url: publicUrlData.publicUrl, sort_order: i });
+  }
+
   redirect(`/admin/products/${data.id}`);
 }
 
@@ -118,8 +150,19 @@ export async function toggleFeatured(formData: FormData) {
 export async function deleteProduct(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
-  await supabase.from("product").delete().eq("id", String(formData.get("id")));
+  const id = String(formData.get("id"));
+  const { error } = await supabase.from("product").delete().eq("id", id);
   revalidatePath("/admin/products");
+
+  if (error) {
+    redirectWithError(
+      `/admin/products/${id}`,
+      error.code === FK_VIOLATION
+        ? "Can't delete: this product has order history. Set its status to Hidden instead."
+        : error.message
+    );
+  }
+
   redirect("/admin/products");
 }
 
@@ -177,8 +220,14 @@ export async function deleteVariant(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
   const product_id = String(formData.get("product_id"));
-  await supabase.from("product_variant").delete().eq("id", String(formData.get("id")));
+  const { error } = await supabase.from("product_variant").delete().eq("id", String(formData.get("id")));
   revalidatePath(`/admin/products/${product_id}`);
+  if (error) {
+    redirectWithError(
+      `/admin/products/${product_id}`,
+      error.code === FK_VIOLATION ? "Can't delete: this size has order history." : error.message
+    );
+  }
 }
 
 // --- Product Image ---
@@ -228,8 +277,9 @@ export async function deleteProductImage(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
   const product_id = String(formData.get("product_id"));
-  await supabase.from("product_image").delete().eq("id", String(formData.get("id")));
+  const { error } = await supabase.from("product_image").delete().eq("id", String(formData.get("id")));
   revalidatePath(`/admin/products/${product_id}`);
+  if (error) redirectWithError(`/admin/products/${product_id}`, error.message);
 }
 
 // --- Orders ---
@@ -243,11 +293,13 @@ export async function updateOrderStatus(formData: FormData) {
     // Atomic: decrements variant stock and flips status, only if still pending_payment
     // (guards against double-decrementing stock if an order is already paid).
     const { error } = await supabase.rpc("complete_order_payment", { p_order_id: id, p_reference: `manual:${id}` });
-    if (error) throw new Error(error.message);
-  } else {
-    await supabase.from("order").update({ status }).eq("id", id);
+    revalidatePath(`/admin/orders/${id}`);
+    revalidatePath("/admin/orders");
+    if (error) redirectWithError(`/admin/orders/${id}`, error.message);
+    return;
   }
 
+  await supabase.from("order").update({ status }).eq("id", id);
   revalidatePath(`/admin/orders/${id}`);
   revalidatePath("/admin/orders");
 }
@@ -314,8 +366,10 @@ export async function updateArticle(formData: FormData) {
 export async function deleteArticle(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
-  await supabase.from("article").delete().eq("id", String(formData.get("id")));
+  const id = String(formData.get("id"));
+  const { error } = await supabase.from("article").delete().eq("id", id);
   revalidatePath("/admin/articles");
+  if (error) redirectWithError(`/admin/articles/${id}`, error.message);
   redirect("/admin/articles");
 }
 

@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { moderateReview } from "@/lib/admin-actions";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 
 export default async function AdminReviewsPage() {
   const supabase = createAdminClient();
@@ -26,12 +27,16 @@ export default async function AdminReviewsPage() {
                 <form action={moderateReview}>
                   <input type="hidden" name="id" value={r.id} />
                   <input type="hidden" name="status" value="approved" />
-                  <button type="submit" className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">Approve</button>
+                  <SubmitButton pendingText="Approving..." className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">
+                    Approve
+                  </SubmitButton>
                 </form>
                 <form action={moderateReview}>
                   <input type="hidden" name="id" value={r.id} />
                   <input type="hidden" name="status" value="rejected" />
-                  <button type="submit" className="rounded-full border border-border px-4 py-1.5 text-xs text-ink-soft">Reject</button>
+                  <SubmitButton pendingText="Rejecting..." className="rounded-full border border-border px-4 py-1.5 text-xs text-ink-soft">
+                    Reject
+                  </SubmitButton>
                 </form>
               </div>
             </li>
