@@ -275,7 +275,7 @@ export async function uploadCollectionImage(formData: FormData) {
 
   const path = `collections/${id}/${Date.now()}-${file.name}`;
   const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
-  if (uploadError) throw new Error(uploadError.message);
+  if (uploadError) redirectWithError("/admin/collections", uploadError.message);
 
   const { data } = supabase.storage.from("product-images").getPublicUrl(path);
   await supabase.from("collection").update({ image_url: data.publicUrl }).eq("id", id);
@@ -391,7 +391,7 @@ export async function uploadArticleCoverImage(formData: FormData) {
 
   const path = `articles/${id}/${Date.now()}-${file.name}`;
   const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
-  if (uploadError) throw new Error(uploadError.message);
+  if (uploadError) redirectWithError(`/admin/articles/${id}`, uploadError.message);
 
   const { data } = supabase.storage.from("product-images").getPublicUrl(path);
   await supabase.from("article").update({ cover_image_url: data.publicUrl }).eq("id", id);

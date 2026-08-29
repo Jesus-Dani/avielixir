@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createCollection, deleteCollection, uploadCollectionImage } from "@/lib/admin-actions";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ErrorBanner } from "@/components/admin/ErrorBanner";
+import { ImageUploadTile } from "@/components/admin/ImageUploadTile";
 
 export default async function AdminCollectionsPage({
   searchParams,
@@ -34,9 +35,9 @@ export default async function AdminCollectionsPage({
             </div>
             <p className="mt-2 font-medium text-ink">{col.name}</p>
 
-            <form action={uploadCollectionImage} className="mt-2 flex items-center gap-2">
+            <form action={uploadCollectionImage} className="mt-2 flex flex-wrap items-center gap-2">
               <input type="hidden" name="id" value={col.id} />
-              <input type="file" name="file" accept="image/*" className="text-xs" />
+              <ImageUploadTile name="file" />
               <SubmitButton
                 pendingText="Uploading..."
                 className="rounded-full border border-border px-3 py-1 text-xs text-ink-soft hover:border-mauve-deep"

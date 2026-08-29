@@ -13,6 +13,7 @@ import {
 } from "@/lib/admin-actions";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ErrorBanner } from "@/components/admin/ErrorBanner";
+import { ImageUploadTile } from "@/components/admin/ImageUploadTile";
 
 export default async function EditProductPage({
   params,
@@ -181,10 +182,9 @@ export default async function EditProductPage({
           </div>
         )}
 
-        <form action={uploadProductImage} className="mt-4 flex flex-wrap items-center gap-2">
+        <form action={uploadProductImage} className="mt-4 flex flex-wrap items-center gap-3">
           <input type="hidden" name="product_id" value={product.id} />
-          <label htmlFor="product-images-input" className="sr-only">Choose product images</label>
-          <input id="product-images-input" type="file" name="files" accept="image/*" multiple required className="text-sm" />
+          <ImageUploadTile name="files" multiple />
           <SubmitButton pendingText="Uploading..." className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">
             Upload Image(s)
           </SubmitButton>

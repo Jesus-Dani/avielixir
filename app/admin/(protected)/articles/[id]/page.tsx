@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { updateArticle, deleteArticle, uploadArticleCoverImage } from "@/lib/admin-actions";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ErrorBanner } from "@/components/admin/ErrorBanner";
+import { ImageUploadTile } from "@/components/admin/ImageUploadTile";
 
 export default async function EditArticlePage({
   params,
@@ -31,9 +32,9 @@ export default async function EditArticlePage({
             <Image src={article.cover_image_url} alt="" fill sizes="400px" className="object-cover" />
           </div>
         )}
-        <form action={uploadArticleCoverImage} className="mt-3 flex items-center gap-2">
+        <form action={uploadArticleCoverImage} className="mt-3 flex flex-wrap items-center gap-3">
           <input type="hidden" name="id" value={article.id} />
-          <input type="file" name="file" accept="image/*" required className="text-sm" />
+          <ImageUploadTile name="file" />
           <SubmitButton pendingText="Uploading..." className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">
             Upload
           </SubmitButton>

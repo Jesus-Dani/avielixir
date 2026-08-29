@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createProduct } from "@/lib/admin-actions";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ImageUploadTile } from "@/components/admin/ImageUploadTile";
 
 export default async function NewProductPage() {
   const supabase = createAdminClient();
@@ -51,8 +52,10 @@ export default async function NewProductPage() {
           </div>
         )}
         <div>
-          <label htmlFor="images" className="eyebrow block text-ink-soft">Images</label>
-          <input id="images" name="images" type="file" accept="image/*" multiple className="mt-2 w-full text-sm" />
+          <p className="eyebrow block text-ink-soft">Images</p>
+          <div className="mt-2">
+            <ImageUploadTile name="images" multiple />
+          </div>
         </div>
         <label className="flex items-center gap-2 text-sm text-ink-soft">
           <input type="checkbox" name="is_featured" /> Featured on homepage
