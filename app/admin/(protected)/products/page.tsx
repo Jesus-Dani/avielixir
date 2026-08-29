@@ -7,8 +7,16 @@ export default async function AdminProductsPage() {
   const supabase = createAdminClient();
   const { data: products } = await supabase
     .from("product")
-    .select("*, category:category_id(name)")
+    .select("*, category:category_id(name), variants:product_variant(price)")
     .order("created_at", { ascending: false });
+
+  function priceRange(variants?: { price: number }[]) {
+    if (!variants || variants.length === 0) return "No sizes yet";
+    const prices = variants.map((v) => v.price);
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    return min === max ? formatNaira(min) : `${formatNaira(min)} - ${formatNaira(max)}`;
+  }
 
   return (
     <div>
@@ -36,7 +44,7 @@ export default async function AdminProductsPage() {
               <tr key={p.id} className="border-b border-border">
                 <td className="py-3">{p.name}</td>
                 <td className="py-3 text-ink-soft">{p.category?.name}</td>
-                <td className="py-3">{formatNaira(p.base_price)}</td>
+                <td className="py-3">{priceRange(p.variants)}</td>
                 <td className="py-3 text-ink-soft">{p.status}</td>
                 <td className="py-3">
                   <form action={toggleFeatured}>

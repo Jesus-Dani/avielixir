@@ -96,13 +96,14 @@ export async function createProduct(formData: FormData) {
   const name = String(formData.get("name") ?? "");
 
   // Sizes are required up front so a product is never live without a purchasable option.
+  // Each size has its own price - there's no product-level fallback price.
   const sizeLabels = formData.getAll("size_label[]").map(String);
   const prices = formData.getAll("price[]").map(String);
   const stockQuantities = formData.getAll("stock_quantity[]").map(String);
   const variantRows = sizeLabels
     .map((size_label, i) => ({
       size_label: size_label.trim(),
-      price: prices[i]?.trim() ? Number(prices[i]) : null,
+      price: Number(prices[i] || 0),
       stock_quantity: Number(stockQuantities[i] || 0),
     }))
     .filter((row) => row.size_label.length > 0);
@@ -121,7 +122,6 @@ export async function createProduct(formData: FormData) {
       category_id: String(formData.get("category_id")),
       scent_notes: String(formData.get("scent_notes") ?? "") || null,
       usage_instructions: String(formData.get("usage_instructions") ?? "") || null,
-      base_price: Number(formData.get("base_price") ?? 0),
       status: "active",
       is_featured: formData.get("is_featured") === "on",
     })
@@ -165,7 +165,6 @@ export async function updateProduct(formData: FormData) {
       category_id: String(formData.get("category_id")),
       scent_notes: String(formData.get("scent_notes") ?? "") || null,
       usage_instructions: String(formData.get("usage_instructions") ?? "") || null,
-      base_price: Number(formData.get("base_price") ?? 0),
       status: formData.get("status") === "hidden" ? "hidden" : "active",
       is_featured: formData.get("is_featured") === "on",
       updated_at: new Date().toISOString(),
@@ -226,11 +225,10 @@ export async function createVariant(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
   const product_id = String(formData.get("product_id"));
-  const priceRaw = formData.get("price");
   await supabase.from("product_variant").insert({
     product_id,
     size_label: String(formData.get("size_label") ?? ""),
-    price: priceRaw ? Number(priceRaw) : null,
+    price: Number(formData.get("price") ?? 0),
     stock_quantity: Number(formData.get("stock_quantity") ?? 0),
   });
   revalidatePath(`/admin/products/${product_id}`);
@@ -241,12 +239,11 @@ export async function updateVariant(formData: FormData) {
   const supabase = createAdminClient();
   const id = String(formData.get("id"));
   const product_id = String(formData.get("product_id"));
-  const priceRaw = formData.get("price");
   await supabase
     .from("product_variant")
     .update({
       size_label: String(formData.get("size_label") ?? ""),
-      price: priceRaw ? Number(priceRaw) : null,
+      price: Number(formData.get("price") ?? 0),
       stock_quantity: Number(formData.get("stock_quantity") ?? 0),
     })
     .eq("id", id);

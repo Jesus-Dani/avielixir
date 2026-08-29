@@ -60,9 +60,6 @@ export async function getProducts(filters: {
     query = query.ilike("name", `%${filters.search}%`);
   }
 
-  if (filters.minPrice != null) query = query.gte("base_price", filters.minPrice);
-  if (filters.maxPrice != null) query = query.lte("base_price", filters.maxPrice);
-
   const { data, error } = await query.order("created_at", { ascending: false });
   if (error) {
     console.error("getProducts", error.message);
@@ -70,6 +67,14 @@ export async function getProducts(filters: {
   }
 
   let products = (data ?? []) as unknown as Product[];
+
+  // Each size has its own price, so "matches the price range" means at least one of its sizes does.
+  if (filters.minPrice != null) {
+    products = products.filter((p) => p.variants?.some((v) => v.price >= filters.minPrice!));
+  }
+  if (filters.maxPrice != null) {
+    products = products.filter((p) => p.variants?.some((v) => v.price <= filters.maxPrice!));
+  }
 
   if (filters.collectionSlug) {
     const { data: coll } = await supabase.from("collection").select("id").eq("slug", filters.collectionSlug).single();

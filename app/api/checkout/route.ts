@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { effectivePrice } from "@/lib/types";
 
 interface CheckoutLine {
   variantId: string;
@@ -40,7 +39,7 @@ export async function POST(request: Request) {
   const variantIds = lines.map((l) => l.variantId);
   const { data: variants, error: variantError } = await admin
     .from("product_variant")
-    .select("id, price, stock_quantity, product:product_id(base_price)")
+    .select("id, price, stock_quantity")
     .in("id", variantIds);
 
   if (variantError || !variants) {
@@ -58,10 +57,8 @@ export async function POST(request: Request) {
     if (variant.stock_quantity < line.quantity) {
       return NextResponse.json({ error: "One of the items in your cart is out of stock." }, { status: 400 });
     }
-    const product = Array.isArray(variant.product) ? variant.product[0] : variant.product;
-    const unitPrice = effectivePrice({ base_price: product?.base_price ?? 0 }, { price: variant.price });
-    subtotal += unitPrice * line.quantity;
-    orderItems.push({ product_variant_id: variant.id, quantity: line.quantity, unit_price: unitPrice });
+    subtotal += variant.price * line.quantity;
+    orderItems.push({ product_variant_id: variant.id, quantity: line.quantity, unit_price: variant.price });
   }
 
   await admin

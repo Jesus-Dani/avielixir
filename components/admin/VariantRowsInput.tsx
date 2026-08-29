@@ -41,10 +41,12 @@ export function VariantRowsInput() {
           <input
             name="price[]"
             type="number"
-            placeholder="Price (optional)"
+            placeholder="Price (₦)"
+            required
+            min="0"
             value={row.price}
             onChange={(e) => updateRow(row.key, "price", e.target.value)}
-            className="w-32 rounded-md border border-border bg-surface px-2 py-1 text-sm"
+            className="w-28 rounded-md border border-border bg-surface px-2 py-1 text-sm"
           />
           <input
             name="stock_quantity[]"

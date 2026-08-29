@@ -40,11 +40,6 @@ export default async function NewProductPage({
           </select>
         </div>
         <div>
-          <label htmlFor="base_price" className="eyebrow block text-ink-soft">Base Price (₦)</label>
-          <input id="base_price" name="base_price" type="number" step="1" required className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
-          <p className="mt-1 text-xs text-ink-soft">Used for any size below that doesn&rsquo;t have its own price.</p>
-        </div>
-        <div>
           <label htmlFor="scent_notes" className="eyebrow block text-ink-soft">Scent Notes</label>
           <textarea id="scent_notes" name="scent_notes" rows={2} className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
         </div>

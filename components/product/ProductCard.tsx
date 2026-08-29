@@ -6,9 +6,7 @@ import { formatNaira } from "@/lib/format";
 
 export function ProductCard({ product }: { product: Product }) {
   const image = mainImage(product.images);
-  const lowestPrice = product.variants?.length
-    ? Math.min(...product.variants.map((v) => v.price ?? product.base_price))
-    : product.base_price;
+  const lowestPrice = product.variants?.length ? Math.min(...product.variants.map((v) => v.price)) : 0;
   const inStock = product.variants?.some((v) => v.stock_quantity > 0) ?? true;
 
   return (

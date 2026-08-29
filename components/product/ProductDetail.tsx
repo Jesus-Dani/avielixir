@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types";
-import { effectivePrice, mainImage } from "@/lib/types";
+import { mainImage } from "@/lib/types";
 import { formatNaira } from "@/lib/format";
 import { useCartStore } from "@/lib/cart-store";
 import { trackEvent } from "@/lib/ga";
@@ -15,7 +15,7 @@ export function ProductDetail({ product }: { product: Product }) {
   const addLine = useCartStore((s) => s.addLine);
   const [added, setAdded] = useState(false);
 
-  const price = variant ? effectivePrice(product, variant) : product.base_price;
+  const price = variant?.price ?? 0;
   const inStock = (variant?.stock_quantity ?? 0) > 0;
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   v.id === variantId ? "border-mauve-deep bg-mauve-deep text-white" : "border-border text-ink-soft"
                 } ${v.stock_quantity === 0 ? "opacity-50" : ""}`}
               >
-                {v.size_label}
+                {v.size_label} &middot; {formatNaira(v.price)}
                 {v.stock_quantity === 0 && " (Out of stock)"}
               </button>
             ))}

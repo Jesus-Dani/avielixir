@@ -57,10 +57,6 @@ export default async function EditProductPage({
           </select>
         </div>
         <div>
-          <label htmlFor="base_price" className="eyebrow block text-ink-soft">Base Price (₦)</label>
-          <input id="base_price" name="base_price" type="number" step="1" defaultValue={product.base_price} required className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
-        </div>
-        <div>
           <label htmlFor="scent_notes" className="eyebrow block text-ink-soft">Scent Notes</label>
           <textarea id="scent_notes" name="scent_notes" defaultValue={product.scent_notes ?? ""} rows={2} className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
         </div>
@@ -113,13 +109,13 @@ export default async function EditProductPage({
       <section className="mt-12 border-t border-border pt-8">
         <h2 className="font-display text-xl text-ink">Sizes & Stock</h2>
         <ul className="mt-4 space-y-3">
-          {(product.variants ?? []).map((v: { id: string; size_label: string; price: number | null; stock_quantity: number }) => (
+          {(product.variants ?? []).map((v: { id: string; size_label: string; price: number; stock_quantity: number }) => (
             <li key={v.id} className="flex flex-wrap items-center gap-2">
               <form action={updateVariant} className="flex flex-1 flex-wrap items-center gap-2">
                 <input type="hidden" name="id" value={v.id} />
                 <input type="hidden" name="product_id" value={product.id} />
-                <input name="size_label" defaultValue={v.size_label} className="w-24 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
-                <input name="price" type="number" defaultValue={v.price ?? ""} placeholder={`base: ${product.base_price}`} className="w-28 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
+                <input name="size_label" defaultValue={v.size_label} required className="w-24 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
+                <input name="price" type="number" defaultValue={v.price} required min="0" className="w-28 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
                 <input name="stock_quantity" type="number" defaultValue={v.stock_quantity} className="w-20 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
                 <SubmitButton pendingText="Saving..." className="rounded-full border border-border px-3 py-1 text-xs text-ink-soft hover:border-mauve-deep">
                   Save
@@ -138,7 +134,7 @@ export default async function EditProductPage({
         <form action={createVariant} className="mt-4 flex flex-wrap items-center gap-2">
           <input type="hidden" name="product_id" value={product.id} />
           <input name="size_label" placeholder="e.g. 50ml" required className="w-24 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
-          <input name="price" type="number" placeholder="Price (optional)" className="w-32 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
+          <input name="price" type="number" placeholder="Price (₦)" required min="0" className="w-28 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
           <input name="stock_quantity" type="number" placeholder="Stock" defaultValue={0} className="w-20 rounded-md border border-border bg-surface px-2 py-1 text-sm" />
           <SubmitButton pendingText="Adding..." className="rounded-full bg-mauve-deep px-4 py-1.5 text-xs text-white">
             Add Size

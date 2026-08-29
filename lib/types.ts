@@ -46,7 +46,6 @@ export interface Product {
   slug: string;
   scent_notes: string | null;
   usage_instructions: string | null;
-  base_price: number;
   status: ProductStatus;
   is_featured: boolean;
   created_at: string;
@@ -61,7 +60,7 @@ export interface ProductVariant {
   id: string;
   product_id: string;
   size_label: string;
-  price: number | null;
+  price: number;
   stock_quantity: number;
   created_at: string;
 }
@@ -121,10 +120,6 @@ export interface OrderItem {
   quantity: number;
   unit_price: number;
   variant?: ProductVariant & { product?: Pick<Product, "name" | "slug"> };
-}
-
-export function effectivePrice(product: Pick<Product, "base_price">, variant: Pick<ProductVariant, "price">) {
-  return variant.price ?? product.base_price;
 }
 
 /** The image shown as a product's main photo: lowest sort_order, not upload/query order. */
