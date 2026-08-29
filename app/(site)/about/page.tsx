@@ -1,8 +1,9 @@
+import { PageHeader } from "@/components/layout/PageHeader";
+
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <p className="eyebrow text-mauve">About Us</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">Scents that define you</h1>
+      <PageHeader eyebrow="About Us" title="Scents that define you" />
       <div className="mt-8 space-y-5 text-ink-soft">
         <p>
           Avi Elixir was built for the campus era of life: the lectures, the hangouts, the late-night reading

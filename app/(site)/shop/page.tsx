@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/product/ProductCard";
 import { getProducts, getCategories } from "@/lib/queries";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 export const revalidate = 60;
 
@@ -22,8 +23,7 @@ export default async function ShopPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <p className="eyebrow text-mauve">Shop</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">All Scents</h1>
+      <PageHeader eyebrow="Shop" title="All Scents" />
 
       <div className="mt-8 flex flex-col gap-8 lg:flex-row">
         <aside className="lg:w-56 lg:shrink-0">

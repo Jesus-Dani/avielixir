@@ -1,8 +1,9 @@
+import { PageHeader } from "@/components/layout/PageHeader";
+
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-      <p className="eyebrow text-mauve">Legal</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">Privacy Policy</h1>
+      <PageHeader eyebrow="Legal" title="Privacy Policy" />
       <div className="mt-8 space-y-5 text-ink-soft">
         <p>
           Avi Elixir collects the information you provide when creating an account or placing an order (name,

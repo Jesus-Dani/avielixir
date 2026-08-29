@@ -40,6 +40,9 @@ export default async function NewProductPage() {
           Create Product
         </button>
       </form>
+      <p className="mt-4 text-xs text-ink-soft">
+        Sizes, stock, images, and collections are added on the next screen after you create the product.
+      </p>
     </div>
   );
 }

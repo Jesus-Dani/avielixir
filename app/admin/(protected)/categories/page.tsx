@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createCategory, deleteCategory } from "@/lib/admin-actions";
+import { ConfirmButton } from "@/components/admin/ConfirmButton";
 
 export default async function AdminCategoriesPage() {
   const supabase = createAdminClient();
@@ -20,7 +21,12 @@ export default async function AdminCategoriesPage() {
             <span className="text-ink">{cat.name}</span>
             <form action={deleteCategory}>
               <input type="hidden" name="id" value={cat.id} />
-              <button type="submit" className="text-sm text-ink-soft hover:text-red-600">Delete</button>
+              <ConfirmButton
+                confirmMessage={`Delete category "${cat.name}"? This can't be undone, and will fail if products still use it.`}
+                className="text-sm text-ink-soft hover:text-red-600"
+              >
+                Delete
+              </ConfirmButton>
             </form>
           </li>
         ))}

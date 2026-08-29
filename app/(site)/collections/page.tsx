@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getCollections } from "@/lib/queries";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 export const revalidate = 60;
 
@@ -9,8 +10,7 @@ export default async function CollectionsPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <p className="eyebrow text-mauve">Explore Our</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">Collections</h1>
+      <PageHeader eyebrow="Explore Our" title="Collections" />
       <p className="mt-3 max-w-md text-ink-soft">Discover fragrances for every mood, memory and moment.</p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

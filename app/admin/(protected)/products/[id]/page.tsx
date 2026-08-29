@@ -11,6 +11,7 @@ import {
   deleteProductImage,
   updateProductCollectionsAction,
 } from "@/lib/admin-actions";
+import { ConfirmButton } from "@/components/admin/ConfirmButton";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -74,7 +75,12 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
 
       <form action={deleteProduct} className="mt-4">
         <input type="hidden" name="id" value={product.id} />
-        <button type="submit" className="text-sm text-red-600 underline">Delete Product</button>
+        <ConfirmButton
+          confirmMessage={`Delete "${product.name}"? This removes all its sizes and images too, and can't be undone.`}
+          className="text-sm text-red-600 underline"
+        >
+          Delete Product
+        </ConfirmButton>
       </form>
 
       <section className="mt-12 border-t border-border pt-8">
@@ -109,7 +115,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
               <form action={deleteVariant}>
                 <input type="hidden" name="id" value={v.id} />
                 <input type="hidden" name="product_id" value={product.id} />
-                <button type="submit" className="text-xs text-red-600">Delete</button>
+                <ConfirmButton confirmMessage={`Delete the ${v.size_label} size?`} className="text-xs text-red-600">
+                  Delete
+                </ConfirmButton>
               </form>
             </li>
           ))}
@@ -134,7 +142,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
               <form action={deleteProductImage} className="mt-1">
                 <input type="hidden" name="id" value={img.id} />
                 <input type="hidden" name="product_id" value={product.id} />
-                <button type="submit" className="text-xs text-red-600">Remove</button>
+                <ConfirmButton confirmMessage="Remove this image?" className="text-xs text-red-600">
+                  Remove
+                </ConfirmButton>
               </form>
             </div>
           ))}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getPublishedArticles } from "@/lib/queries";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 export const revalidate = 60;
 
@@ -9,11 +10,10 @@ export default async function JournalPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-      <p className="eyebrow text-mauve">Journal</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">Stories &amp; Scents</h1>
+      <PageHeader eyebrow="Journal" title="Stories & Scents" />
 
       {articles.length === 0 ? (
-        <p className="mt-8 text-ink-soft">No articles yet — check back soon.</p>
+        <p className="mt-8 text-ink-soft">No articles yet. Check back soon.</p>
       ) : (
         <div className="mt-10 grid gap-10 sm:grid-cols-2">
           {articles.map((article) => (

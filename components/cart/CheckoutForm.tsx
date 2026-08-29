@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart-store";
 import { formatNaira } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 import { getBankDetails } from "@/lib/bank-details";
+import { useMounted } from "@/lib/use-mounted";
 
 export function CheckoutForm({
   userId,
@@ -23,11 +24,7 @@ export function CheckoutForm({
   const router = useRouter();
   const lines = useCartStore((s) => s.lines);
   const subtotal = useCartStore((s) => s.subtotal());
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard SSR/CSR hydration guard for localStorage-backed cart state
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState(initialPhone);

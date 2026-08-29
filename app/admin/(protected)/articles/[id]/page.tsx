@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { updateArticle, deleteArticle, uploadArticleCoverImage } from "@/lib/admin-actions";
+import { ConfirmButton } from "@/components/admin/ConfirmButton";
 
 export default async function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -56,7 +57,9 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
 
       <form action={deleteArticle} className="mt-4">
         <input type="hidden" name="id" value={article.id} />
-        <button type="submit" className="text-sm text-red-600 underline">Delete Article</button>
+        <ConfirmButton confirmMessage={`Delete "${article.title}"? This can't be undone.`} className="text-sm text-red-600 underline">
+          Delete Article
+        </ConfirmButton>
       </form>
     </div>
   );

@@ -1,8 +1,9 @@
+import { PageHeader } from "@/components/layout/PageHeader";
+
 export default function TermsPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-      <p className="eyebrow text-mauve">Legal</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">Terms of Service</h1>
+      <PageHeader eyebrow="Legal" title="Terms of Service" />
       <div className="mt-8 space-y-5 text-ink-soft">
         <p>By using the Avi Elixir website and placing an order, you agree to the following terms.</p>
         <p>

@@ -1,8 +1,9 @@
+import { PageHeader } from "@/components/layout/PageHeader";
+
 export default function ShippingPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-      <p className="eyebrow text-mauve">Shipping</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">Shipping &amp; Delivery</h1>
+      <PageHeader eyebrow="Shipping" title="Shipping & Delivery" />
       <div className="mt-8 space-y-5 text-ink-soft">
         <p>
           Checkout on our site covers your product total only. It does not include a delivery fee. Once your

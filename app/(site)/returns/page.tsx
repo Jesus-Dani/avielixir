@@ -1,8 +1,9 @@
+import { PageHeader } from "@/components/layout/PageHeader";
+
 export default function ReturnsPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-      <p className="eyebrow text-mauve">Policy</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">Returns Policy</h1>
+      <PageHeader eyebrow="Policy" title="Returns Policy" />
       <div className="mt-8 space-y-5 text-ink-soft">
         <p>All sales on Avi Elixir are final. We do not accept returns, exchanges, or refunds once an order has been placed and paid for.</p>
         <p>

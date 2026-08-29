@@ -2,20 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useCartStore } from "@/lib/cart-store";
 import { formatNaira } from "@/lib/format";
+import { useMounted } from "@/lib/use-mounted";
 
 export default function CartPage() {
   const lines = useCartStore((s) => s.lines);
   const setQuantity = useCartStore((s) => s.setQuantity);
   const removeLine = useCartStore((s) => s.removeLine);
   const subtotal = useCartStore((s) => s.subtotal());
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard SSR/CSR hydration guard for localStorage-backed state
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   if (!mounted) return null;
 

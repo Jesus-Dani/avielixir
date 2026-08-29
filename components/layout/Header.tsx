@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCartStore } from "@/lib/cart-store";
+import { useMounted } from "@/lib/use-mounted";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -15,13 +16,7 @@ const NAV_LINKS = [
 
 export function Header() {
   const itemCount = useCartStore((s) => s.itemCount());
-  // Avoid SSR/client hydration mismatch: localStorage-backed count only reads after mount.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard SSR/CSR hydration guard for localStorage-backed cart count
-    setMounted(true);
-  }, []);
-
+  const mounted = useMounted();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

@@ -1,12 +1,12 @@
 import { whatsappLink } from "@/lib/whatsapp";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 export default function ContactPage() {
   const href = whatsappLink();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6">
-      <p className="eyebrow text-mauve">Contact</p>
-      <h1 className="font-display mt-2 text-4xl text-ink">We&rsquo;re Here to Help</h1>
+      <PageHeader eyebrow="Contact" title="We&rsquo;re Here to Help" />
       <p className="mt-4 text-ink-soft">
         Questions about an order, a scent, or delivery? The fastest way to reach us is WhatsApp.
       </p>

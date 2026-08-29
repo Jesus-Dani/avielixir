@@ -4,6 +4,7 @@ import { formatNaira } from "@/lib/format";
 import { getBankDetails } from "@/lib/bank-details";
 import { whatsappLink, buildOrderWhatsAppMessage } from "@/lib/whatsapp";
 import { OrderPlacedTracker } from "@/components/cart/OrderPlacedTracker";
+import { OrderItemsList } from "@/components/order/OrderItemsList";
 
 export default async function CheckoutConfirmationPage({ params }: { params: Promise<{ orderId: string }> }) {
   const { orderId } = await params;
@@ -70,16 +71,7 @@ export default async function CheckoutConfirmationPage({ params }: { params: Pro
         </p>
       </div>
 
-      <ul className="mt-8 divide-y divide-border border-y border-border">
-        {(items ?? []).map((item) => (
-          <li key={item.id} className="flex justify-between py-3 text-sm">
-            <span>
-              {item.variant?.product?.name} ({item.variant?.size_label}) × {item.quantity}
-            </span>
-            <span>{formatNaira(item.unit_price * item.quantity)}</span>
-          </li>
-        ))}
-      </ul>
+      <OrderItemsList items={items ?? []} className="mt-8" />
 
       {waHref && (
         <a
@@ -92,7 +84,7 @@ export default async function CheckoutConfirmationPage({ params }: { params: Pro
         </a>
       )}
       <p className="mt-2 text-xs text-ink-soft">
-        Your receipt is already saved with your order — please also attach the screenshot in the WhatsApp chat so we
+        Your receipt is already saved with your order. Please also attach the screenshot in the WhatsApp chat so we
         can verify it quickly.
       </p>
 

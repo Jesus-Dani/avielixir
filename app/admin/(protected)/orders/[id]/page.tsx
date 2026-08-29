@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { updateOrderStatus } from "@/lib/admin-actions";
 import { formatNaira } from "@/lib/format";
+import { OrderItemsList } from "@/components/order/OrderItemsList";
 
 const STATUSES = ["pending_payment", "paid", "processing", "shipped", "delivered", "cancelled"];
 
@@ -34,14 +35,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
         {order.delivery_phone_note && <p className="mt-1 text-sm text-ink-soft">Phone / delivery note: {order.delivery_phone_note}</p>}
       </div>
 
-      <ul className="mt-6 divide-y divide-border border-y border-border">
-        {(order.items ?? []).map((item: { id: string; variant?: { product?: { name?: string }; size_label?: string }; quantity: number; unit_price: number }) => (
-          <li key={item.id} className="flex justify-between py-3 text-sm">
-            <span>{item.variant?.product?.name} ({item.variant?.size_label}) × {item.quantity}</span>
-            <span>{formatNaira(item.unit_price * item.quantity)}</span>
-          </li>
-        ))}
-      </ul>
+      <OrderItemsList items={order.items ?? []} className="mt-6" />
 
       <p className="mt-4 font-medium text-ink">Subtotal: {formatNaira(order.subtotal)}</p>
       <p className="text-xs text-ink-soft">Delivery fee is arranged separately and is not part of this checkout total.</p>

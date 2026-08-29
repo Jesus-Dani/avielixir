@@ -16,7 +16,7 @@ export function PrivacyGate() {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- reading localStorage requires a client-only effect
       if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
     } catch {
-      // localStorage unavailable (private mode etc.) — let the visitor through rather than error.
+      // localStorage unavailable (private mode etc.), let the visitor through rather than error.
     }
   }, []);
 
