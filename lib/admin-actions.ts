@@ -26,12 +26,25 @@ function redirectWithError(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
 }
 
+/** Appends -2, -3, ... until the slug is free, so two entries with the same (or similarly-named) name never collide. */
+async function uniqueSlug(supabase: ReturnType<typeof createAdminClient>, table: string, baseSlug: string) {
+  let slug = baseSlug || "item";
+  let suffix = 2;
+  while (true) {
+    const { data } = await supabase.from(table).select("id").eq("slug", slug).maybeSingle();
+    if (!data) return slug;
+    slug = `${baseSlug}-${suffix}`;
+    suffix++;
+  }
+}
+
 // --- Category ---
 export async function createCategory(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
   const name = String(formData.get("name") ?? "");
-  await supabase.from("category").insert({ name, slug: slugify(name) });
+  const slug = await uniqueSlug(supabase, "category", slugify(name));
+  await supabase.from("category").insert({ name, slug });
   revalidatePath("/admin/categories");
 }
 
@@ -54,7 +67,8 @@ export async function createCollection(formData: FormData) {
   const supabase = createAdminClient();
   const name = String(formData.get("name") ?? "");
   const image_url = String(formData.get("image_url") ?? "") || null;
-  await supabase.from("collection").insert({ name, slug: slugify(name), image_url });
+  const slug = await uniqueSlug(supabase, "collection", slugify(name));
+  await supabase.from("collection").insert({ name, slug, image_url });
   revalidatePath("/admin/collections");
 }
 
@@ -80,11 +94,30 @@ export async function createProduct(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
   const name = String(formData.get("name") ?? "");
+
+  // Sizes are required up front so a product is never live without a purchasable option.
+  const sizeLabels = formData.getAll("size_label[]").map(String);
+  const prices = formData.getAll("price[]").map(String);
+  const stockQuantities = formData.getAll("stock_quantity[]").map(String);
+  const variantRows = sizeLabels
+    .map((size_label, i) => ({
+      size_label: size_label.trim(),
+      price: prices[i]?.trim() ? Number(prices[i]) : null,
+      stock_quantity: Number(stockQuantities[i] || 0),
+    }))
+    .filter((row) => row.size_label.length > 0);
+
+  if (variantRows.length === 0) {
+    redirectWithError("/admin/products/new", "Add at least one size before creating the product.");
+  }
+
+  const slug = await uniqueSlug(supabase, "product", slugify(name));
+
   const { data, error } = await supabase
     .from("product")
     .insert({
       name,
-      slug: slugify(name),
+      slug,
       category_id: String(formData.get("category_id")),
       scent_notes: String(formData.get("scent_notes") ?? "") || null,
       usage_instructions: String(formData.get("usage_instructions") ?? "") || null,
@@ -95,7 +128,11 @@ export async function createProduct(formData: FormData) {
     .select()
     .single();
 
-  if (error || !data) throw new Error(error?.message ?? "Could not create product");
+  if (error || !data) {
+    redirectWithError("/admin/products/new", error?.message ?? "Could not create product.");
+  }
+
+  await supabase.from("product_variant").insert(variantRows.map((row) => ({ ...row, product_id: data.id })));
 
   const collectionIds = formData.getAll("collection_ids").map(String);
   if (collectionIds.length > 0) {
@@ -329,12 +366,13 @@ export async function createArticle(formData: FormData) {
   const supabase = createAdminClient();
   const title = String(formData.get("title") ?? "");
   const status = formData.get("status") === "published" ? "published" : "draft";
+  const slug = await uniqueSlug(supabase, "article", slugify(title));
 
   const { data, error } = await supabase
     .from("article")
     .insert({
       title,
-      slug: slugify(title),
+      slug,
       excerpt: String(formData.get("excerpt") ?? "") || null,
       content: String(formData.get("content") ?? ""),
       status,
