@@ -76,7 +76,7 @@ export default async function EditProductPage({
           </select>
         </div>
         <label className="flex items-center gap-2 text-sm text-ink-soft">
-          <input type="checkbox" name="is_featured" defaultChecked={product.is_featured} /> Featured on homepage
+          <input type="checkbox" name="is_featured" defaultChecked={product.is_featured} /> Feature on homepage
         </label>
         <SubmitButton className="rounded-full bg-mauve-deep px-6 py-2.5 text-sm font-medium text-white hover:bg-mauve-deep-2" pendingText="Saving...">
           Save Changes
