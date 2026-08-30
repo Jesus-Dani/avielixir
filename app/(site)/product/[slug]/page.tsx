@@ -21,7 +21,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <ProductDetail product={product} />
       </div>
 
-      <ReviewsSection productId={product.id} />
+      <ReviewsSection productId={product.id} productSlug={product.slug} />
 
       {related.length > 0 && (
         <section className="mt-16 border-t border-border pt-10">

@@ -2,8 +2,14 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { toggleFeatured } from "@/lib/admin-actions";
 import { formatNaira } from "@/lib/format";
+import { SuccessBanner } from "@/components/admin/SuccessBanner";
 
-export default async function AdminProductsPage() {
+export default async function AdminProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ created?: string }>;
+}) {
+  const { created } = await searchParams;
   const supabase = createAdminClient();
   const { data: products } = await supabase
     .from("product")
@@ -26,6 +32,7 @@ export default async function AdminProductsPage() {
           + New Product
         </Link>
       </div>
+      <SuccessBanner message={created ? "Product published." : undefined} />
 
       <div className="mt-8 overflow-x-auto">
         <table className="w-full min-w-[640px] text-sm">

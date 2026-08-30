@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ReviewForm } from "@/components/product/ReviewForm";
 import type { Review } from "@/lib/types";
 
-export async function ReviewsSection({ productId }: { productId: string }) {
+export async function ReviewsSection({ productId, productSlug }: { productId: string; productSlug: string }) {
   const supabase = await createClient();
 
   const [{ data: reviews }, { data: userData }] = await Promise.all([
@@ -47,7 +47,8 @@ export async function ReviewsSection({ productId }: { productId: string }) {
         <ReviewForm productId={productId} />
       ) : (
         <p className="mt-6 text-sm text-ink-soft">
-          <Link href="/login" className="text-mauve-deep underline">Sign in</Link> with a verified purchase to leave a review.
+          <Link href={`/login?next=/product/${productSlug}`} className="text-mauve-deep underline">Sign in</Link> with a
+          verified purchase to leave a review.
         </p>
       )}
     </section>

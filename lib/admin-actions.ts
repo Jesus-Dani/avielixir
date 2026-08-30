@@ -151,7 +151,8 @@ export async function createProduct(formData: FormData) {
     await supabase.from("product_image").insert({ product_id: data.id, url: publicUrlData.publicUrl, sort_order: i });
   }
 
-  redirect(`/admin/products/${data.id}`);
+  revalidatePath("/admin/products");
+  redirect("/admin/products?created=1");
 }
 
 export async function updateProduct(formData: FormData) {

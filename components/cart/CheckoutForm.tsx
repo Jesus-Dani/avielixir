@@ -7,6 +7,7 @@ import { formatNaira } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 import { getBankDetails } from "@/lib/bank-details";
 import { useMounted } from "@/lib/use-mounted";
+import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 
 export function CheckoutForm({
   userId,
@@ -162,15 +163,10 @@ export function CheckoutForm({
         </div>
 
         <div className="mt-4">
-          <label htmlFor="receipt" className="eyebrow block text-ink-soft">Payment Receipt</label>
-          <input
-            id="receipt"
-            type="file"
-            accept="image/*"
-            required
-            onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
-            className="mt-2 w-full text-sm"
-          />
+          <p className="eyebrow block text-ink-soft">Payment Receipt</p>
+          <div className="mt-2">
+            <ImageUploadTile onFilesChange={(files) => setReceipt(files[0] ?? null)} />
+          </div>
         </div>
 
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}

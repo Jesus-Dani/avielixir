@@ -13,7 +13,7 @@ import {
 } from "@/lib/admin-actions";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ErrorBanner } from "@/components/admin/ErrorBanner";
-import { ImageUploadTile } from "@/components/admin/ImageUploadTile";
+import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 
 export default async function EditProductPage({
   params,

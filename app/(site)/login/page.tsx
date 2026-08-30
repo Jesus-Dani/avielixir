@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 function LoginFormInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const next = searchParams.get("next");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,7 +25,7 @@ function LoginFormInner() {
       setError(error.message);
       return;
     }
-    router.push(searchParams.get("next") ?? "/account");
+    router.push(next ?? "/account");
     router.refresh();
   }
 
@@ -46,7 +47,10 @@ function LoginFormInner() {
         </button>
       </form>
       <p className="mt-6 text-sm text-ink-soft">
-        New to Avi Elixir? <Link href="/signup" className="text-mauve-deep underline">Create an account</Link>
+        New to Avi Elixir?{" "}
+        <Link href={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"} className="text-mauve-deep underline">
+          Create an account
+        </Link>
       </p>
     </div>
   );

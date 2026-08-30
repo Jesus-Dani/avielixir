@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function WishlistButton({ variantId }: { variantId: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [userId, setUserId] = useState<string | null | undefined>(undefined);
   const [saved, setSaved] = useState(false);
   const [pending, setPending] = useState(false);
@@ -28,7 +29,7 @@ export function WishlistButton({ variantId }: { variantId: string }) {
 
   async function toggle() {
     if (!userId) {
-      router.push("/login");
+      router.push(`/login?next=${encodeURIComponent(pathname)}`);
       return;
     }
     setPending(true);
